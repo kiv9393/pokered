@@ -6633,6 +6633,14 @@ HandleExplodingAnimation:
 	; ld a, MEGA_PUNCH
 ; fallthrough
 PlayMoveAnimation:
+	push af
+	; === RUMBLE ON ===
+	ld a, $08
+	ld [$4000], a
+	ld a, $01
+	ld [$C700], a
+	; === END RUMBLE ON ===
+	pop af
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
 	call Delay3
