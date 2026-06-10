@@ -6633,47 +6633,44 @@ HandleExplodingAnimation:
 	; ld a, MEGA_PUNCH
 ; fallthrough
 PlayMoveAnimation:
-	; === RUMBLE ON v5 - one frame pulse on C6FC/C6FD ===
+	; === RUMBLE ON v6 - write and LEAVE, Lua clears ===
 	push af
 	push bc
 	ld a, [wPlayerMovePower]
 	and a
-	jr z, .skipRumble5
+	jr z, .skipRumble6
 	cp 2
-	jr c, .skipRumble5
+	jr c, .skipRumble6
 	ld a, [wCriticalHitOrOHKO]
 	ld [$C6FD], a
 	ld a, [wPlayerMovePower]
 	cp 41
-	jr c, .sig5Weak
+	jr c, .sig6Weak
 	cp 81
-	jr c, .sig5Med
+	jr c, .sig6Med
 	cp 111
-	jr c, .sig5Heavy
+	jr c, .sig6Heavy
 	ld a, 4
-	jr .sig5Send
-.sig5Weak:
+	jr .sig6Done
+.sig6Weak:
 	ld a, 1
-	jr .sig5Send
-.sig5Med:
+	jr .sig6Done
+.sig6Med:
 	ld a, 2
-	jr .sig5Send
-.sig5Heavy:
+	jr .sig6Done
+.sig6Heavy:
 	ld a, 3
-	jr .sig5Send
-.skipRumble5:
-	ld a, 0
+.sig6Done:
+	ld [$C6FC], a
+	jr .rumble6End
+.skipRumble6:
+	xor a
 	ld [$C6FC], a
 	ld [$C6FD], a
-	jr .rumble5Done
-.sig5Send:
-	ld [$C6FC], a
-	ld a, 0
-	ld [$C6FC], a
-.rumble5Done:
+.rumble6End:
 	pop bc
 	pop af
-	; === END RUMBLE ON v5 ===
+	; === END RUMBLE ON v6 ===
 
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
