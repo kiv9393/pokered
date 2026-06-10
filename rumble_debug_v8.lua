@@ -1,21 +1,17 @@
--- Rumble v8.1: player moves (C6FC) + enemy moves (C6FB) + crit (C6FD)
--- ASM writes and leaves, Lua reads, acts, clears.
--- Player moves: full tier buzz
--- Enemy moves: shorter sharp buzz (taking damage feel)
+-- Rumble v8.2: player (C6FC) + enemy (C6FB) + crit (C6FD) + ball (C6FA)
+-- C6FA: 5=shake thump, 6=catch success triple pulse
 
 local PLAYER_TIERS = {
-    [1] = { label="WEAK",   buzz=8  },
-    [2] = { label="MEDIUM", buzz=20 },
-    [3] = { label="HEAVY",  buzz=35 },
-    [4] = { label="MAX",    buzz=55 },
+    [1]={label="WEAK",   buzz=8 },
+    [2]={label="MEDIUM", buzz=20},
+    [3]={label="HEAVY",  buzz=35},
+    [4]={label="MAX",    buzz=55},
 }
-
--- Enemy hits feel different: sharper, shorter
 local ENEMY_TIERS = {
-    [1] = { label="HIT-weak",   buzz=6  },
-    [2] = { label="HIT-medium", buzz=14 },
-    [3] = { label="HIT-heavy",  buzz=25 },
-    [4] = { label="HIT-max",    buzz=40 },
+    [1]={label="HIT-weak",   buzz=6 },
+    [2]={label="HIT-medium", buzz=14},
+    [3]={label="HIT-heavy",  buzz=25},
+    [4]={label="HIT-max",    buzz=40},
 }
 
 local frameCount = 0
@@ -23,11 +19,15 @@ local buzzing = false
 local buzzFrames = 0
 local buzzLabel = ""
 local critPending = false
-local critPhase = 0
-local critTimer = 0
-local pendingBuzz = 0
-local pendingLabel = ""
-local sessionMoves = 0
+local critPhase, critTimer = 0, 0
+local pendingBuzz, pendingLabel = 0, ""
+
+-- Catch triple pulse state
+local catchPulse = false
+local catchPhase = 0
+local catchTimer = 0
+-- 3 pulses: on/off/on/off/on/off
+local CATCH_PATTERN = {10, 8, 10, 8, 10, 0}
 
 local function startBuzz(frames, label)
     buzzing = true
@@ -41,17 +41,34 @@ callbacks:add("frame", function()
     local playerTier = emu:read8(0xC6FC)
     local enemyTier  = emu:read8(0xC6FB)
     local isCrit     = emu:read8(0xC6FD)
+    local ballSig    = emu:read8(0xC6FA)
 
-    -- Player move takes priority over enemy (shouldn't overlap but just in case)
-    if playerTier >= 1 and playerTier <= 4 then
+    -- Ball signals (highest priority during catching)
+    if ballSig == 5 then
+        emu:write8(0xC6FA, 0)
+        console:log("[" .. frameCount .. "] BALL: shake thump")
+        buzzing = false
+        catchPulse = false
+        startBuzz(8, "shake")
+
+    elseif ballSig == 6 then
+        emu:write8(0xC6FA, 0)
+        console:log("[" .. frameCount .. "] BALL: *** CAUGHT! triple pulse ***")
+        buzzing = false
+        catchPulse = true
+        catchPhase = 1
+        catchTimer = CATCH_PATTERN[1]
+
+    -- Player move
+    elseif playerTier >= 1 and playerTier <= 4 then
         emu:write8(0xC6FC, 0)
         emu:write8(0xC6FD, 0)
         local t = PLAYER_TIERS[playerTier]
-        sessionMoves = sessionMoves + 1
         local critStr = isCrit > 0 and " +CRIT" or ""
         console:log("[" .. frameCount .. "] YOU: " .. t.label .. critStr)
         buzzing = false
         critPending = false
+        catchPulse = false
         pendingLabel = t.label
         pendingBuzz = t.buzz
         if isCrit > 0 then
@@ -62,14 +79,30 @@ callbacks:add("frame", function()
             startBuzz(t.buzz, t.label)
         end
 
+    -- Enemy move
     elseif enemyTier >= 1 and enemyTier <= 4 then
         emu:write8(0xC6FB, 0)
         local t = ENEMY_TIERS[enemyTier]
-        sessionMoves = sessionMoves + 1
         console:log("[" .. frameCount .. "] FOE: " .. t.label)
         buzzing = false
         critPending = false
+        catchPulse = false
         startBuzz(t.buzz, t.label)
+    end
+
+    -- Catch triple pulse state machine
+    if catchPulse then
+        catchTimer = catchTimer - 1
+        if catchTimer <= 0 then
+            catchPhase = catchPhase + 1
+            if catchPhase > #CATCH_PATTERN or CATCH_PATTERN[catchPhase] == 0 then
+                catchPulse = false
+                console:log("  ✓ caught!")
+            else
+                catchTimer = CATCH_PATTERN[catchPhase]
+            end
+        end
+        return
     end
 
     -- Crit tap sequence
@@ -86,7 +119,7 @@ callbacks:add("frame", function()
         return
     end
 
-    -- Buzz countdown
+    -- Main buzz countdown
     if buzzing then
         buzzFrames = buzzFrames - 1
         if buzzFrames <= 0 then
@@ -96,6 +129,5 @@ callbacks:add("frame", function()
     end
 end)
 
-console:log("Rumble v8.1 | YOU=C6FC FOE=C6FB CRIT=C6FD")
-console:log("Player: WEAK=8f MED=20f HEAVY=35f MAX=55f")
-console:log("Enemy:  WEAK=6f MED=14f HEAVY=25f MAX=40f")
+console:log("Rumble v8.2 | YOU=C6FC FOE=C6FB CRIT=C6FD BALL=C6FA")
+console:log("Ball: shake=8f | catch=triple pulse (10/8/10/8/10f)")

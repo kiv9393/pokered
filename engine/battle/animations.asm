@@ -743,6 +743,12 @@ DoBallTossSpecialEffects:
 	ret
 
 DoBallShakeSpecialEffects:
+	; === RUMBLE BALL v1 - one shake thump ===
+	push af
+	ld a, $05
+	ld [$C6FA], a    ; signal: ball shake
+	pop af
+	; === END RUMBLE BALL v1 ===
 	ld a, [wSubAnimCounter]
 	cp 4 ; is it the beginning of a shake?
 	jr nz, .skipPlayingSound
