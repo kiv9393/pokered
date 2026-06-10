@@ -6633,52 +6633,53 @@ HandleExplodingAnimation:
 	; ld a, MEGA_PUNCH
 ; fallthrough
 PlayMoveAnimation:
-	; === RUMBLE ON v3 - player moves only ===
+	; === RUMBLE ON v4 - one frame pulse, Lua handles timing ===
 	push af
 	push bc
 
-	; Only fire for player moves - check wPlayerMovePower is nonzero
-	; and that this is a real damaging/status move context
 	ld a, [wPlayerMovePower]
 	and a
-	jr z, .skipRumble    ; power == 0, skip
-
-	; Write crit flag to C701
-	ld a, [wCriticalHitOrOHKO]
-	ld [$C701], a
-
-	; Write power tier to C700
-	ld a, [wPlayerMovePower]
+	jr z, .skipRumble4
 	cp 2
-	jr c, .skipRumble    ; power 0-1 = not a real move
+	jr c, .skipRumble4
+
+	; Write crit flag to C6FF
+	ld a, [wCriticalHitOrOHKO]
+	ld [$C6FF], a
+
+	; Write power tier to C6FE (one-frame pulse)
+	ld a, [wPlayerMovePower]
 	cp 41
-	jr c, .sigWeak
+	jr c, .sig4Weak
 	cp 81
-	jr c, .sigMed
+	jr c, .sig4Med
 	cp 111
-	jr c, .sigHeavy
+	jr c, .sig4Heavy
 	ld a, 4
-	jr .sigDone
-.sigWeak:
+	jr .sig4Done
+.sig4Weak:
 	ld a, 1
-	jr .sigDone
-.sigMed:
+	jr .sig4Done
+.sig4Med:
 	ld a, 2
-	jr .sigDone
-.sigHeavy:
+	jr .sig4Done
+.sig4Heavy:
 	ld a, 3
-	jr .sigDone
-.skipRumble:
+	jr .sig4Done
+.skipRumble4:
 	ld a, 0
-	ld [$C700], a
-	ld [$C701], a
-	jr .rumbleDone
-.sigDone:
-	ld [$C700], a
-.rumbleDone:
+	ld [$C6FE], a
+	ld [$C6FF], a
+	jr .rumble4Done
+.sig4Done:
+	ld [$C6FE], a
+	; Immediately clear so Lua only sees it for one frame
+	ld a, 0
+	ld [$C6FE], a
+.rumble4Done:
 	pop bc
 	pop af
-	; === END RUMBLE ON v3 ===
+	; === END RUMBLE ON v4 ===
 
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
