@@ -6633,24 +6633,31 @@ HandleExplodingAnimation:
 	; ld a, MEGA_PUNCH
 ; fallthrough
 PlayMoveAnimation:
-	; === RUMBLE ON v2 - signal only, Lua handles timing ===
+	; === RUMBLE ON v3 - player moves only ===
 	push af
 	push bc
 
-	; Write power tier to C700, crit flag to C701
-	ld a, [wCriticalHitOrOHKO]
-	ld [$C701], a        ; 0=normal, 1=crit
+	; Only fire for player moves - check wPlayerMovePower is nonzero
+	; and that this is a real damaging/status move context
+	ld a, [wPlayerMovePower]
+	and a
+	jr z, .skipRumble    ; power == 0, skip
 
+	; Write crit flag to C701
+	ld a, [wCriticalHitOrOHKO]
+	ld [$C701], a
+
+	; Write power tier to C700
 	ld a, [wPlayerMovePower]
 	cp 2
-	jr c, .sigStatus     ; power 0-1 = status, signal 0
+	jr c, .skipRumble    ; power 0-1 = not a real move
 	cp 41
-	jr c, .sigWeak       ; <= 40
+	jr c, .sigWeak
 	cp 81
-	jr c, .sigMed        ; 41-80
+	jr c, .sigMed
 	cp 111
-	jr c, .sigHeavy      ; 81-110
-	ld a, 4              ; MAX
+	jr c, .sigHeavy
+	ld a, 4
 	jr .sigDone
 .sigWeak:
 	ld a, 1
@@ -6661,14 +6668,17 @@ PlayMoveAnimation:
 .sigHeavy:
 	ld a, 3
 	jr .sigDone
-.sigStatus:
+.skipRumble:
 	ld a, 0
+	ld [$C700], a
+	ld [$C701], a
+	jr .rumbleDone
 .sigDone:
 	ld [$C700], a
-
+.rumbleDone:
 	pop bc
 	pop af
-	; === END RUMBLE ON v2 ===
+	; === END RUMBLE ON v3 ===
 
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
