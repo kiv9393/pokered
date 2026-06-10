@@ -6633,14 +6633,43 @@ HandleExplodingAnimation:
 	; ld a, MEGA_PUNCH
 ; fallthrough
 PlayMoveAnimation:
+	; === RUMBLE ON v2 - signal only, Lua handles timing ===
 	push af
-	; === RUMBLE ON ===
-	ld a, $08
-	ld [$4000], a
-	ld a, $01
+	push bc
+
+	; Write power tier to C700, crit flag to C701
+	ld a, [wCriticalHitOrOHKO]
+	ld [$C701], a        ; 0=normal, 1=crit
+
+	ld a, [wPlayerMovePower]
+	cp 2
+	jr c, .sigStatus     ; power 0-1 = status, signal 0
+	cp 41
+	jr c, .sigWeak       ; <= 40
+	cp 81
+	jr c, .sigMed        ; 41-80
+	cp 111
+	jr c, .sigHeavy      ; 81-110
+	ld a, 4              ; MAX
+	jr .sigDone
+.sigWeak:
+	ld a, 1
+	jr .sigDone
+.sigMed:
+	ld a, 2
+	jr .sigDone
+.sigHeavy:
+	ld a, 3
+	jr .sigDone
+.sigStatus:
+	ld a, 0
+.sigDone:
 	ld [$C700], a
-	; === END RUMBLE ON ===
+
+	pop bc
 	pop af
+	; === END RUMBLE ON v2 ===
+
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
 	call Delay3
