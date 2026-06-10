@@ -5563,6 +5563,41 @@ HandleExplosionMiss:
 	call SwapPlayerAndEnemyLevels
 	xor a
 PlayEnemyMoveAnimation:
+	; === RUMBLE ENEMY v1 - write and leave, Lua clears ===
+	push af
+	push bc
+	ld a, [wEnemyMovePower]
+	and a
+	jr z, .skipEnemyRumble
+	cp 2
+	jr c, .skipEnemyRumble
+	ld a, [wEnemyMovePower]
+	cp 41
+	jr c, .sigEnWeak
+	cp 81
+	jr c, .sigEnMed
+	cp 111
+	jr c, .sigEnHeavy
+	ld a, 4
+	jr .sigEnDone
+.sigEnWeak:
+	ld a, 1
+	jr .sigEnDone
+.sigEnMed:
+	ld a, 2
+	jr .sigEnDone
+.sigEnHeavy:
+	ld a, 3
+.sigEnDone:
+	ld [$C6FB], a
+	jr .enemyRumbleDone
+.skipEnemyRumble:
+	xor a
+	ld [$C6FB], a
+.enemyRumbleDone:
+	pop bc
+	pop af
+	; === END RUMBLE ENEMY v1 ===
 	push af
 	ld a, [wEnemyBattleStatus2]
 	bit HAS_SUBSTITUTE_UP, a ; does mon have a substitute?

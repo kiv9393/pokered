@@ -1,12 +1,21 @@
--- Rumble v8: ASM writes tier and leaves it. Lua reads, acts, then clears.
--- C6FC: tier (1=weak 2=med 3=heavy 4=max), Lua clears after reading
--- C6FD: crit flag, Lua clears after reading
+-- Rumble v8.1: player moves (C6FC) + enemy moves (C6FB) + crit (C6FD)
+-- ASM writes and leaves, Lua reads, acts, clears.
+-- Player moves: full tier buzz
+-- Enemy moves: shorter sharp buzz (taking damage feel)
 
-local TIERS = {
+local PLAYER_TIERS = {
     [1] = { label="WEAK",   buzz=8  },
     [2] = { label="MEDIUM", buzz=20 },
     [3] = { label="HEAVY",  buzz=35 },
     [4] = { label="MAX",    buzz=55 },
+}
+
+-- Enemy hits feel different: sharper, shorter
+local ENEMY_TIERS = {
+    [1] = { label="HIT-weak",   buzz=6  },
+    [2] = { label="HIT-medium", buzz=14 },
+    [3] = { label="HIT-heavy",  buzz=25 },
+    [4] = { label="HIT-max",    buzz=40 },
 }
 
 local frameCount = 0
@@ -20,37 +29,50 @@ local pendingBuzz = 0
 local pendingLabel = ""
 local sessionMoves = 0
 
+local function startBuzz(frames, label)
+    buzzing = true
+    buzzFrames = frames
+    buzzLabel = label
+end
+
 callbacks:add("frame", function()
     frameCount = frameCount + 1
-    local tier = emu:read8(0xC6FC)
-    local isCrit = emu:read8(0xC6FD)
 
-    if tier >= 1 and tier <= 4 then
-        -- Clear immediately so we don't re-trigger next frame
+    local playerTier = emu:read8(0xC6FC)
+    local enemyTier  = emu:read8(0xC6FB)
+    local isCrit     = emu:read8(0xC6FD)
+
+    -- Player move takes priority over enemy (shouldn't overlap but just in case)
+    if playerTier >= 1 and playerTier <= 4 then
         emu:write8(0xC6FC, 0)
         emu:write8(0xC6FD, 0)
-
-        local t = TIERS[tier]
+        local t = PLAYER_TIERS[playerTier]
         sessionMoves = sessionMoves + 1
         local critStr = isCrit > 0 and " +CRIT" or ""
-        console:log("[" .. frameCount .. "] MOVE #" .. sessionMoves .. ": " .. t.label .. critStr .. " (" .. t.buzz .. "f)")
-
-        pendingLabel = t.label
-        pendingBuzz = t.buzz
+        console:log("[" .. frameCount .. "] YOU: " .. t.label .. critStr)
         buzzing = false
         critPending = false
-
+        pendingLabel = t.label
+        pendingBuzz = t.buzz
         if isCrit > 0 then
             critPending = true
             critPhase = 0
             critTimer = 6
         else
-            buzzing = true
-            buzzFrames = t.buzz
-            buzzLabel = t.label
+            startBuzz(t.buzz, t.label)
         end
+
+    elseif enemyTier >= 1 and enemyTier <= 4 then
+        emu:write8(0xC6FB, 0)
+        local t = ENEMY_TIERS[enemyTier]
+        sessionMoves = sessionMoves + 1
+        console:log("[" .. frameCount .. "] FOE: " .. t.label)
+        buzzing = false
+        critPending = false
+        startBuzz(t.buzz, t.label)
     end
 
+    -- Crit tap sequence
     if critPending then
         critTimer = critTimer - 1
         if critPhase == 0 and critTimer <= 0 then critPhase=1; critTimer=4
@@ -58,21 +80,22 @@ callbacks:add("frame", function()
         elseif critPhase == 2 and critTimer <= 0 then critPhase=3; critTimer=8
         elseif critPhase == 3 and critTimer <= 0 then
             critPending = false
-            buzzing = true
-            buzzFrames = pendingBuzz
-            buzzLabel = pendingLabel
-            console:log("  [crit done] → " .. buzzLabel .. " buzz")
+            startBuzz(pendingBuzz, pendingLabel)
+            console:log("  [crit] → " .. pendingLabel)
         end
         return
     end
 
+    -- Buzz countdown
     if buzzing then
         buzzFrames = buzzFrames - 1
         if buzzFrames <= 0 then
             buzzing = false
-            console:log("  [buzz done] " .. buzzLabel)
+            console:log("  ✓ " .. buzzLabel)
         end
     end
 end)
 
-console:log("Rumble v8 ready | ASM writes, Lua clears | watching C6FC")
+console:log("Rumble v8.1 | YOU=C6FC FOE=C6FB CRIT=C6FD")
+console:log("Player: WEAK=8f MED=20f HEAVY=35f MAX=55f")
+console:log("Enemy:  WEAK=6f MED=14f HEAVY=25f MAX=40f")
