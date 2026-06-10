@@ -6633,53 +6633,47 @@ HandleExplodingAnimation:
 	; ld a, MEGA_PUNCH
 ; fallthrough
 PlayMoveAnimation:
-	; === RUMBLE ON v4 - one frame pulse, Lua handles timing ===
+	; === RUMBLE ON v5 - one frame pulse on C6FC/C6FD ===
 	push af
 	push bc
-
 	ld a, [wPlayerMovePower]
 	and a
-	jr z, .skipRumble4
+	jr z, .skipRumble5
 	cp 2
-	jr c, .skipRumble4
-
-	; Write crit flag to C6FF
+	jr c, .skipRumble5
 	ld a, [wCriticalHitOrOHKO]
-	ld [$C6FF], a
-
-	; Write power tier to C6FE (one-frame pulse)
+	ld [$C6FD], a
 	ld a, [wPlayerMovePower]
 	cp 41
-	jr c, .sig4Weak
+	jr c, .sig5Weak
 	cp 81
-	jr c, .sig4Med
+	jr c, .sig5Med
 	cp 111
-	jr c, .sig4Heavy
+	jr c, .sig5Heavy
 	ld a, 4
-	jr .sig4Done
-.sig4Weak:
+	jr .sig5Send
+.sig5Weak:
 	ld a, 1
-	jr .sig4Done
-.sig4Med:
+	jr .sig5Send
+.sig5Med:
 	ld a, 2
-	jr .sig4Done
-.sig4Heavy:
+	jr .sig5Send
+.sig5Heavy:
 	ld a, 3
-	jr .sig4Done
-.skipRumble4:
+	jr .sig5Send
+.skipRumble5:
 	ld a, 0
-	ld [$C6FE], a
-	ld [$C6FF], a
-	jr .rumble4Done
-.sig4Done:
-	ld [$C6FE], a
-	; Immediately clear so Lua only sees it for one frame
+	ld [$C6FC], a
+	ld [$C6FD], a
+	jr .rumble5Done
+.sig5Send:
+	ld [$C6FC], a
 	ld a, 0
-	ld [$C6FE], a
-.rumble4Done:
+	ld [$C6FC], a
+.rumble5Done:
 	pop bc
 	pop af
-	; === END RUMBLE ON v4 ===
+	; === END RUMBLE ON v5 ===
 
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
