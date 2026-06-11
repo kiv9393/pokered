@@ -66,6 +66,12 @@ TryPushingBoulder::
 	call MoveSprite
 	ld a, SFX_PUSH_BOULDER
 	call PlaySound
+	; === RUMBLE STRENGTH v1 - boulder push step ===
+	push af
+	ld a, $0B
+	ld [$C6FA], a
+	pop af
+	; === END RUMBLE STRENGTH v1 ===
 	ld hl, wMiscFlags
 	set BIT_BOULDER_DUST, [hl]
 	ret
@@ -99,6 +105,12 @@ DoBoulderDustAnimation::
 	ldh [hSpriteIndex], a
 	call GetSpriteMovementByte2Pointer
 	ld [hl], $10
+	; === RUMBLE BOULDER SETTLE v1 - boulder finishes moving ===
+	push af
+	ld a, $0C
+	ld [$C6FA], a
+	pop af
+	; === END RUMBLE BOULDER SETTLE v1 ===
 	ld a, SFX_CUT
 	jp PlaySound
 

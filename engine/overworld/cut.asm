@@ -57,6 +57,12 @@ UsedCut:
 	ld de, CutTreeBlockSwaps
 	call ReplaceTreeTileBlock
 	call RedrawMapView
+	; === RUMBLE CUT v1 - tree disappears ===
+	push af
+	ld a, $0A
+	ld [$C6FA], a
+	pop af
+	; === END RUMBLE CUT v1 ===
 	farcall AnimCut
 	ld a, $1
 	ld [wUpdateSpritesEnabled], a
