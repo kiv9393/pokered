@@ -1,8 +1,8 @@
--- Rumble v9: full coverage - battles + pokeballs + heartbeat
+-- Rumble v9.1: battles + pokeballs + poison/burn tick
 -- C6FC: player move tier (1-4)
 -- C6FB: enemy move tier (1-4)
 -- C6FD: crit flag
--- C6FA: 5=ball shake, 6=catch success
+-- C6FA: 5=ball shake, 6=catch success, 7=poison/burn tick
 
 local PLAYER_TIERS = {
     [1]={label="WEAK",   buzz=8 },
@@ -20,7 +20,7 @@ local ENEMY_TIERS = {
 local frameCount = 0
 local sessionEvents = 0
 local lastHeartbeat = 0
-local HEARTBEAT_INTERVAL = 60 * 60 -- log alive message every 60 seconds
+local HEARTBEAT_INTERVAL = 60 * 60
 
 local buzzing = false
 local buzzFrames = 0
@@ -35,6 +35,12 @@ local catchPhase = 0
 local catchTimer = 0
 local CATCH_PATTERN = {10, 8, 10, 8, 10, 0}
 
+-- Poison drip: 3 weak pulses spaced out
+local poisonPulse = false
+local poisonPhase = 0
+local poisonTimer = 0
+local POISON_PATTERN = {6, 12, 6, 12, 6, 0}  -- buzz/gap/buzz/gap/buzz
+
 local function startBuzz(frames, label)
     buzzing = true
     buzzFrames = frames
@@ -45,15 +51,15 @@ local function cancelAll()
     buzzing = false
     critPending = false
     catchPulse = false
+    poisonPulse = false
 end
 
 callbacks:add("frame", function()
     frameCount = frameCount + 1
 
-    -- Heartbeat: confirms script alive even when nothing is happening
     if frameCount - lastHeartbeat >= HEARTBEAT_INTERVAL then
         lastHeartbeat = frameCount
-        console:log("[" .. frameCount .. "] ♥ alive | events so far: " .. sessionEvents)
+        console:log("[" .. frameCount .. "] ♥ alive | events: " .. sessionEvents)
     end
 
     local playerTier = emu:read8(0xC6FC)
@@ -61,7 +67,7 @@ callbacks:add("frame", function()
     local isCrit     = emu:read8(0xC6FD)
     local ballSig    = emu:read8(0xC6FA)
 
-    -- === BALL SIGNALS (highest priority) ===
+    -- === BALL / POISON SIGNALS ===
     if ballSig == 5 then
         emu:write8(0xC6FA, 0)
         sessionEvents = sessionEvents + 1
@@ -72,11 +78,20 @@ callbacks:add("frame", function()
     elseif ballSig == 6 then
         emu:write8(0xC6FA, 0)
         sessionEvents = sessionEvents + 1
-        console:log("[" .. frameCount .. "] ★ CAUGHT! triple pulse #" .. sessionEvents)
+        console:log("[" .. frameCount .. "] ★ CAUGHT! #" .. sessionEvents)
         cancelAll()
         catchPulse = true
         catchPhase = 1
         catchTimer = CATCH_PATTERN[1]
+
+    elseif ballSig == 7 then
+        emu:write8(0xC6FA, 0)
+        sessionEvents = sessionEvents + 1
+        console:log("[" .. frameCount .. "] ☠ POISON/BURN tick #" .. sessionEvents)
+        cancelAll()
+        poisonPulse = true
+        poisonPhase = 1
+        poisonTimer = POISON_PATTERN[1]
 
     -- === PLAYER MOVE ===
     elseif playerTier >= 1 and playerTier <= 4 then
@@ -107,6 +122,21 @@ callbacks:add("frame", function()
         startBuzz(t.buzz, t.label)
     end
 
+    -- === POISON DRIP PATTERN ===
+    if poisonPulse then
+        poisonTimer = poisonTimer - 1
+        if poisonTimer <= 0 then
+            poisonPhase = poisonPhase + 1
+            if poisonPhase > #POISON_PATTERN or POISON_PATTERN[poisonPhase] == 0 then
+                poisonPulse = false
+                console:log("  ☠ drip done")
+            else
+                poisonTimer = POISON_PATTERN[poisonPhase]
+            end
+        end
+        return
+    end
+
     -- === CATCH TRIPLE PULSE ===
     if catchPulse then
         catchTimer = catchTimer - 1
@@ -114,7 +144,7 @@ callbacks:add("frame", function()
             catchPhase = catchPhase + 1
             if catchPhase > #CATCH_PATTERN or CATCH_PATTERN[catchPhase] == 0 then
                 catchPulse = false
-                console:log("  ★ catch pulse complete!")
+                console:log("  ★ catch pulse done")
             else
                 catchTimer = CATCH_PATTERN[catchPhase]
             end
@@ -131,7 +161,7 @@ callbacks:add("frame", function()
         elseif critPhase == 3 and critTimer <= 0 then
             critPending = false
             startBuzz(pendingBuzz, pendingLabel)
-            console:log("  [crit taps] → " .. pendingLabel .. " buzz")
+            console:log("  [crit] → " .. pendingLabel)
         end
         return
     end
@@ -147,8 +177,6 @@ callbacks:add("frame", function()
 end)
 
 console:log("================================================")
-console:log("  Rumble v9 | Full Coverage Debug")
-console:log("  ▶ YOU moves  ◀ FOE moves")
-console:log("  ◉ Ball shake ★ Catch success")
-console:log("  Heartbeat every 60 seconds")
+console:log("  Rumble v9.1 | Full Coverage")
+console:log("  ▶ YOU  ◀ FOE  ◉ Ball  ★ Catch  ☠ Poison")
 console:log("================================================")

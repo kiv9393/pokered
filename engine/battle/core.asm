@@ -492,6 +492,16 @@ HandlePoisonBurnLeechSeed:
 	ld a, BURN_PSN_ANIM
 	call PlayMoveAnimation   ; play burn/poison animation
 	pop hl
+	; === RUMBLE POISON v1 - player poison/burn tick ===
+	push af
+	ldh a, [hWhoseTurn]
+	and a
+	jr nz, .skipPoisonRumble  ; only rumble when player is hurt
+	ld a, $07
+	ld [$C6FA], a              ; signal: poison/burn tick
+.skipPoisonRumble:
+	pop af
+	; === END RUMBLE POISON v1 ===
 	call HandlePoisonBurnLeechSeed_DecreaseOwnHP
 .notBurnedOrPoisoned
 	ld de, wPlayerBattleStatus2
