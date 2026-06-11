@@ -89,6 +89,12 @@ ApplyOutOfBattlePoisonDamage:
 	ld a, e
 	and a ; are any party members poisoned?
 	jr z, .skipPoisonEffectAndSound
+	; === RUMBLE OVERWORLD POISON v1 - step damage flash ===
+	push af
+	ld a, $07
+	ld [$C6FA], a
+	pop af
+	; === END RUMBLE OVERWORLD POISON v1 ===
 	ld b, $2
 	predef ChangeBGPalColor0_4Frames ; change BG white to dark gray for 4 frames
 	ld a, SFX_POISONED
