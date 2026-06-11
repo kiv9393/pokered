@@ -2267,16 +2267,16 @@ UseBagItem:
 	ld hl, wPlayerBattleStatus1
 	res USING_TRAPPING_MOVE, [hl] ; not using multi-turn move any more
 
+.checkIfMonCaptured
+	ld a, [wCapturedMonSpecies]
+	and a ; was the enemy mon captured with a ball?
+	jr nz, .returnAfterCapturingMon
 	; === RUMBLE CATCH v1 - successful catch ===
 	push af
 	ld a, $06
 	ld [$C6FA], a
 	pop af
 	; === END RUMBLE CATCH v1 ===
-.checkIfMonCaptured
-	ld a, [wCapturedMonSpecies]
-	and a ; was the enemy mon captured with a ball?
-	jr nz, .returnAfterCapturingMon
 
 	ld a, [wBattleType]
 	cp BATTLE_TYPE_SAFARI
