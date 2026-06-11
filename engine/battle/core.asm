@@ -3472,6 +3472,12 @@ CheckPlayerStatusConditions:
 	ld hl, FullyParalyzedText
 	call PrintText
 
+	; === RUMBLE PARALYSIS v1 - player fully paralyzed stutter ===
+	push af
+	ld a, $08
+	ld [$C6FA], a
+	pop af
+	; === END RUMBLE PARALYSIS v1 ===
 .MonHurtItselfOrFullyParalysed
 	ld hl, wPlayerBattleStatus1
 	ld a, [hl]
