@@ -5582,7 +5582,7 @@ HandleIfEnemyMoveMissed:
 	ld a, [wEnemyMoveEffect]
 	cp EXPLODE_EFFECT
 	jr z, HandleExplosionMiss
-	jr EnemyCheckIfFlyOrChargeEffect
+	jp EnemyCheckIfFlyOrChargeEffect
 .moveDidNotMiss
 	call SwapPlayerAndEnemyLevels
 
