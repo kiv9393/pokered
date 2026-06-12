@@ -109,6 +109,10 @@ DoBoulderDustAnimation::
 	push af
 	ld a, $0C
 	ld [$C6FA], a
+	ld a, 8
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
 	pop af
 	; === END RUMBLE BOULDER SETTLE v1 ===
 	ld a, SFX_CUT

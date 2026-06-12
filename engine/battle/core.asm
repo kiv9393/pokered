@@ -498,7 +498,11 @@ HandlePoisonBurnLeechSeed:
 	and a
 	jr nz, .skipPoisonRumble  ; only rumble when player is hurt
 	ld a, $07
-	ld [$C6FA], a              ; signal: poison/burn tick
+	ld [$C6FA], a
+	ld a, 12
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a              ; signal: poison/burn tick
 .skipPoisonRumble:
 	pop af
 	; === END RUMBLE POISON v1 ===
@@ -2285,6 +2289,10 @@ UseBagItem:
 	push af
 	ld a, $06
 	ld [$C6FA], a
+	ld a, 30
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
 	pop af
 	; === END RUMBLE CATCH v1 ===
 
@@ -3476,6 +3484,10 @@ CheckPlayerStatusConditions:
 	push af
 	ld a, $08
 	ld [$C6FA], a
+	ld a, 10
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
 	pop af
 	; === END RUMBLE PARALYSIS v1 ===
 .MonHurtItselfOrFullyParalysed
@@ -5585,41 +5597,58 @@ HandleExplosionMiss:
 	call SwapPlayerAndEnemyLevels
 	xor a
 PlayEnemyMoveAnimation:
-	; === RUMBLE ENEMY v1 - write and leave, Lua clears ===
+	; === RUMBLE ENEMY v2 - direct motor ===
 	push af
 	push bc
 	ld a, [wEnemyMovePower]
 	and a
-	jr z, .skipEnemyRumble
+	jr z, .skipEnMot2
 	cp 2
-	jr c, .skipEnemyRumble
+	jr c, .skipEnMot2
 	ld a, [wEnemyMovePower]
 	cp 41
-	jr c, .sigEnWeak
+	jr c, .enMot2W
 	cp 81
-	jr c, .sigEnMed
+	jr c, .enMot2M
 	cp 111
-	jr c, .sigEnHeavy
+	jr c, .enMot2H
+	ld a, 40
+	jr .enMot2Fire
+.enMot2W:
+	ld a, 6
+	jr .enMot2Fire
+.enMot2M:
+	ld a, 14
+	jr .enMot2Fire
+.enMot2H:
+	ld a, 25
+.enMot2Fire:
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
+	ld a, [wEnemyMovePower]
+	cp 41
+	jr c, .enSig2W
+	cp 81
+	jr c, .enSig2M
+	cp 111
+	jr c, .enSig2H
 	ld a, 4
-	jr .sigEnDone
-.sigEnWeak:
+	jr .enSig2D
+.enSig2W:
 	ld a, 1
-	jr .sigEnDone
-.sigEnMed:
+	jr .enSig2D
+.enSig2M:
 	ld a, 2
-	jr .sigEnDone
-.sigEnHeavy:
+	jr .enSig2D
+.enSig2H:
 	ld a, 3
-.sigEnDone:
+.enSig2D:
 	ld [$C6FB], a
-	jr .enemyRumbleDone
-.skipEnemyRumble:
-	xor a
-	ld [$C6FB], a
-.enemyRumbleDone:
+.skipEnMot2:
 	pop bc
 	pop af
-	; === END RUMBLE ENEMY v1 ===
+	; === END RUMBLE ENEMY v2 ===
 	push af
 	ld a, [wEnemyBattleStatus2]
 	bit HAS_SUBSTITUTE_UP, a ; does mon have a substitute?
@@ -6690,44 +6719,61 @@ HandleExplodingAnimation:
 	; ld a, MEGA_PUNCH
 ; fallthrough
 PlayMoveAnimation:
-	; === RUMBLE ON v6 - write and LEAVE, Lua clears ===
+	; === RUMBLE ON v7 - direct motor + WRAM signal ===
 	push af
 	push bc
 	ld a, [wPlayerMovePower]
 	and a
-	jr z, .skipRumble6
+	jr z, .skipMot7
 	cp 2
-	jr c, .skipRumble6
+	jr c, .skipMot7
 	ld a, [wCriticalHitOrOHKO]
 	ld [$C6FD], a
 	ld a, [wPlayerMovePower]
 	cp 41
-	jr c, .sig6Weak
+	jr c, .mot7Weak
 	cp 81
-	jr c, .sig6Med
+	jr c, .mot7Med
 	cp 111
-	jr c, .sig6Heavy
+	jr c, .mot7Heavy
+	ld a, 55
+	jr .mot7Fire
+.mot7Weak:
+	ld a, 8
+	jr .mot7Fire
+.mot7Med:
+	ld a, 20
+	jr .mot7Fire
+.mot7Heavy:
+	ld a, 35
+.mot7Fire:
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
+	ld a, [wPlayerMovePower]
+	cp 41
+	jr c, .mot7SigW
+	cp 81
+	jr c, .mot7SigM
+	cp 111
+	jr c, .mot7SigH
 	ld a, 4
-	jr .sig6Done
-.sig6Weak:
+	jr .mot7SigD
+.mot7SigW:
 	ld a, 1
-	jr .sig6Done
-.sig6Med:
+	jr .mot7SigD
+.mot7SigM:
 	ld a, 2
-	jr .sig6Done
-.sig6Heavy:
+	jr .mot7SigD
+.mot7SigH:
 	ld a, 3
-.sig6Done:
+.mot7SigD:
 	ld [$C6FC], a
-	jr .rumble6End
-.skipRumble6:
-	xor a
-	ld [$C6FC], a
-	ld [$C6FD], a
-.rumble6End:
+	jr .skipMot7
+.skipMot7:
 	pop bc
 	pop af
-	; === END RUMBLE ON v6 ===
+	; === END RUMBLE ON v7 ===
 
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion

@@ -93,6 +93,10 @@ ApplyOutOfBattlePoisonDamage:
 	push af
 	ld a, $07
 	ld [$C6FA], a
+	ld a, 12
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
 	pop af
 	; === END RUMBLE OVERWORLD POISON v1 ===
 	ld b, $2

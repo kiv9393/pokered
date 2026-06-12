@@ -61,6 +61,10 @@ UsedCut:
 	push af
 	ld a, $0A
 	ld [$C6FA], a
+	ld a, 20
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
 	pop af
 	; === END RUMBLE CUT v1 ===
 	farcall AnimCut
