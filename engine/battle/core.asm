@@ -5628,19 +5628,19 @@ PlayEnemyMoveAnimation:
 	ld [$4000], a
 	ld a, [wEnemyMovePower]
 	cp 41
-	jr c, .enSig2W
+	jp c, .enSig2W
 	cp 81
-	jr c, .enSig2M
+	jp c, .enSig2M
 	cp 111
-	jr c, .enSig2H
+	jp c, .enSig2H
 	ld a, 4
-	jr .enSig2D
+	jp .enSig2D
 .enSig2W:
 	ld a, 1
-	jr .enSig2D
+	jp .enSig2D
 .enSig2M:
 	ld a, 2
-	jr .enSig2D
+	jp .enSig2D
 .enSig2H:
 	ld a, 3
 .enSig2D:
