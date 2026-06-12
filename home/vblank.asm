@@ -36,6 +36,19 @@ VBlank::
 
 	call Random
 
+	; === RUMBLE VBLANK v1 - motor countdown timer ===
+	ld a, [$C6F9]
+	and a
+	jr z, .rumbleOff
+	dec a
+	ld [$C6F9], a
+	jr nz, .rumbleDone
+.rumbleOff
+	ld a, $00
+	ld [$4000], a
+.rumbleDone
+	; === END RUMBLE VBLANK v1 ===
+
 	ldh a, [hVBlankOccurred]
 	and a
 	jr z, .skipZeroing
