@@ -5607,19 +5607,19 @@ PlayEnemyMoveAnimation:
 	jr c, .skipEnMot2
 	ld a, [wEnemyMovePower]
 	cp 41
-	jr c, .enMot2W
+	jp c, .enMot2W
 	cp 81
-	jr c, .enMot2M
+	jp c, .enMot2M
 	cp 111
-	jr c, .enMot2H
+	jp c, .enMot2H
 	ld a, 40
-	jr .enMot2Fire
+	jp .enMot2Fire
 .enMot2W:
 	ld a, 6
-	jr .enMot2Fire
+	jp .enMot2Fire
 .enMot2M:
 	ld a, 14
-	jr .enMot2Fire
+	jp .enMot2Fire
 .enMot2H:
 	ld a, 25
 .enMot2Fire:

@@ -72,6 +72,16 @@ UsedCut:
 	ld [wUpdateSpritesEnabled], a
 	ld a, SFX_CUT
 	call PlaySound
+	; === RUMBLE CUT SLASH v1 - slash sound ===
+	push af
+	ld a, $0B
+	ld [$C6FA], a
+	ld a, 8
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
+	pop af
+	; === END RUMBLE CUT SLASH v1 ===
 	ld a, $90
 	ldh [hWY], a
 	call UpdateSprites

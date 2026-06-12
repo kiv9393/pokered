@@ -97,6 +97,16 @@ DoBoulderDustAnimation::
 	bit BIT_SCRIPTED_NPC_MOVEMENT, a
 	ret nz
 	callfar AnimateBoulderDust
+	; === RUMBLE BOULDER SETTLE v1 ===
+	push af
+	ld a, $0D
+	ld [$C6FA], a
+	ld a, 20
+	ld [$C6F9], a
+	ld a, $08
+	ld [$4000], a
+	pop af
+	; === END RUMBLE BOULDER SETTLE v1 ===
 	call DiscardButtonPresses
 	ld [wJoyIgnore], a
 	call ResetBoulderPushFlags
