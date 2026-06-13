@@ -36,26 +36,23 @@ VBlank::
 
 	call Random
 
-	; === RUMBLE VBLANK v2 - safe bit3 only, preserve RAM bank ===
+	; === RUMBLE VBLANK v3 - safe, self-contained ===
 	ld a, [$C6F9]
 	and a
 	jr z, .rumbleOff
 	dec a
 	ld [$C6F9], a
 	jr nz, .rumbleDone
-	; Motor still running, ensure bit3 set
-	ld a, [wROMBank]
-	and $F7           ; keep RAM bank bits, clear bit3 just in case
-	or $08            ; set bit3 = rumble on
-	ld [$4000], a
-	jr .rumbleDone
 .rumbleOff
-	; Timer hit zero - turn motor off, preserve RAM bank
-	ld a, [wROMBank]
-	and $F7           ; clear bit3 only = rumble off
+	; Only clear bit3 (rumble), write $00 to rumble register safely
+	; MBC5 rumble register is $4000 bit3 only - $00 = rumble off, $08 = on
+	; We use a dedicated shadow register $C6F8 to track state
+	ld a, [$C6F8]
+	and $F7
+	ld [$C6F8], a
 	ld [$4000], a
 .rumbleDone
-	; === END RUMBLE VBLANK v2 ===
+	; === END RUMBLE VBLANK v3 ===
 
 	ldh a, [hVBlankOccurred]
 	and a

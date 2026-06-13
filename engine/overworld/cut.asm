@@ -63,7 +63,9 @@ UsedCut:
 	ld [$C6FA], a
 	ld a, 20
 	ld [$C6F9], a
-	ld a, $08
+	ld a, [$C6F8]
+	or $08
+	ld [$C6F8], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE CUT v1 ===
@@ -78,7 +80,9 @@ UsedCut:
 	ld [$C6FA], a
 	ld a, 8
 	ld [$C6F9], a
-	ld a, $08
+	ld a, [$C6F8]
+	or $08
+	ld [$C6F8], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE CUT SLASH v1 ===
