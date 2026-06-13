@@ -6945,217 +6945,103 @@ PlayMoveAnimation:
 	pop bc
 	pop af
 	; === END RUMBLE TYPE TEXTURE v1 ===
-	; === RUMBLE ICONIC MOVES v1 - per-move overrides ===
+	; === RUMBLE ICONIC MOVES v1 ===
 	push af
 	push bc
 	push hl
 	ld a, [wPlayerMovePower]
 	and a
-	jp z, .iconicDone      ; skip status moves
+	jp z, .imDone
 	ld a, [wPlayerMoveNum]
-	; Check each iconic move and set custom duration
-	; HYPER BEAM ($3F) - 150 power, massive sustained
-	cp $3F
-	jp nz, .imHyperBeam
+	cp $3F ; HYPER BEAM
+	jp nz, .im01
 	ld a, 70
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imHyperBeam:
-	; EXPLOSION ($99) - 170 effective power, violent instant
-	cp $99
-	jp nz, .imExplosion
+	jp .imFire
+.im01: cp $99 ; EXPLOSION
+	jp nz, .im02
 	ld a, 60
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imExplosion:
-	; EARTHQUAKE ($59) - 100 power ground, heavy sustained
-	cp $59
-	jp nz, .imEarthquake
+	jp .imFire
+.im02: cp $59 ; EARTHQUAKE
+	jp nz, .im03
 	ld a, 55
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imEarthquake:
-	; BLIZZARD ($3B) - 120 power ice, smooth sustained
-	cp $3B
-	jp nz, .imBlizzard
+	jp .imFire
+.im03: cp $3B ; BLIZZARD
+	jp nz, .im04
 	ld a, 50
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imBlizzard:
-	; FIRE BLAST ($7E) - 120 power fire, intense burst
-	cp $7E
-	jp nz, .imFireBlast
+	jp .imFire
+.im04: cp $7E ; FIRE BLAST
+	jp nz, .im05
 	ld a, 48
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imFireBlast:
-	; THUNDER ($57) - 120 power electric, violent jolt
-	cp $57
-	jp nz, .imThunder
+	jp .imFire
+.im05: cp $57 ; THUNDER
+	jp nz, .im06
 	ld a, 45
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imThunder:
-	; PSYCHIC ($5E) - 90 power, slow building wave
-	cp $5E
-	jp nz, .imPsychic
+	jp .imFire
+.im06: cp $5B ; DIG
+	jp nz, .im07
+	ld a, 45
+	jp .imFire
+.im07: cp $5E ; PSYCHIC
+	jp nz, .im08
 	ld a, 42
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imPsychic:
-	; SURF ($39) - 95 power water, smooth wave
-	cp $39
-	jp nz, .imSurf
+	jp .imFire
+.im08: cp $39 ; SURF
+	jp nz, .im09
 	ld a, 38
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imSurf:
-	; THUNDERBOLT ($55) - 95 power electric, sharp jolt
-	cp $55
-	jp nz, .imThunderbolt
+	jp .imFire
+.im09: cp $98 ; CRABHAMMER
+	jp nz, .im10
+	ld a, 38
+	jp .imFire
+.im10: cp $55 ; THUNDERBOLT
+	jp nz, .im11
 	ld a, 35
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imThunderbolt:
-	; FLAMETHROWER ($35) - 95 power fire, sustained burn
-	cp $35
-	jp nz, .imFlamethrower
+	jp .imFire
+.im11: cp $35 ; FLAMETHROWER
+	jp nz, .im12
 	ld a, 35
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imFlamethrower:
-	; ICE BEAM ($3A) - 95 power ice, smooth freeze
-	cp $3A
-	jp nz, .imIceBeam
+	jp .imFire
+.im12: cp $3A ; ICE BEAM
+	jp nz, .im13
 	ld a, 35
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imIceBeam:
-	; ROCK SLIDE ($9D) - 75 power rock, heavy impact
-	cp $9D
-	jp nz, .imRockSlide
+	jp .imFire
+.im13: cp $9D ; ROCK SLIDE
+	jp nz, .im14
 	ld a, 30
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imRockSlide:
-	; BODY SLAM ($22) - 85 power, solid thud
-	cp $22
-	jp nz, .imBodySlam
+	jp .imFire
+.im14: cp $22 ; BODY SLAM
+	jp nz, .im15
 	ld a, 28
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imBodySlam:
-	; SUBMISSION ($42) - 80 power fighting, recoil slam
-	cp $42
-	jp nz, .imSubmission
+	jp .imFire
+.im15: cp $42 ; SUBMISSION
+	jp nz, .im16
 	ld a, 26
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imSubmission:
-	; CRABHAMMER ($98) - 90 power water, crushing impact
-	cp $98
-	jp nz, .imCrabhammer
-	ld a, 38
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imCrabhammer:
-	; DIG ($5B) - 100 power ground, underground rumble
-	cp $5B
-	jp nz, .imDig
-	ld a, 45
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imDig:
-	; SLASH ($A3) - high crit, sharp quick slice
-	cp $A3
-	jp nz, .imSlash
-	ld a, 15
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imSlash:
-	; WRAP/FIRE SPIN ($23/$53) - trapping, sustained grind
-	cp $23
-	jp z, .imTrap
-	cp $53
-	jp nz, .imTrap
-.imTrap:
+	jp .imFire
+.im16: cp $23 ; WRAP
+	jp nz, .im17
 	ld a, 25
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imTrap:
-	; KARATE CHOP ($02) - high crit, sharp crack
-	cp $02
-	jp nz, .imKarateChop
-	ld a, 14
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-	jp .iconicDone
-.imKarateChop:
-	; STOMP ($17) - 65 power, heavy stomp thud
-	cp $17
-	jp nz, .iconicDone
+	jp .imFire
+.im17: cp $53 ; FIRE SPIN
+	jp nz, .im18
+	ld a, 25
+	jp .imFire
+.im18: cp $17 ; STOMP
+	jp nz, .im19
 	ld a, 22
+	jp .imFire
+.im19: cp $A3 ; SLASH
+	jp nz, .im20
+	ld a, 15
+	jp .imFire
+.im20: cp $02 ; KARATE CHOP
+	jp nz, .imDone
+	ld a, 14
+.imFire:
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
-.iconicDone:
+.imDone:
 	pop hl
 	pop bc
 	pop af
