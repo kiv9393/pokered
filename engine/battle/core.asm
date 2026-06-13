@@ -6945,6 +6945,221 @@ PlayMoveAnimation:
 	pop bc
 	pop af
 	; === END RUMBLE TYPE TEXTURE v1 ===
+	; === RUMBLE ICONIC MOVES v1 - per-move overrides ===
+	push af
+	push bc
+	push hl
+	ld a, [wPlayerMovePower]
+	and a
+	jp z, .iconicDone      ; skip status moves
+	ld a, [wPlayerMoveNum]
+	; Check each iconic move and set custom duration
+	; HYPER BEAM ($3F) - 150 power, massive sustained
+	cp $3F
+	jp nz, .notHyperBeam
+	ld a, 70
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notHyperBeam:
+	; EXPLOSION ($99) - 170 effective power, violent instant
+	cp $99
+	jp nz, .notExplosion
+	ld a, 60
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notExplosion:
+	; EARTHQUAKE ($59) - 100 power ground, heavy sustained
+	cp $59
+	jp nz, .notEarthquake
+	ld a, 55
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notEarthquake:
+	; BLIZZARD ($3B) - 120 power ice, smooth sustained
+	cp $3B
+	jp nz, .notBlizzard
+	ld a, 50
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notBlizzard:
+	; FIRE BLAST ($7E) - 120 power fire, intense burst
+	cp $7E
+	jp nz, .notFireBlast
+	ld a, 48
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notFireBlast:
+	; THUNDER ($57) - 120 power electric, violent jolt
+	cp $57
+	jp nz, .notThunder
+	ld a, 45
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notThunder:
+	; PSYCHIC ($5E) - 90 power, slow building wave
+	cp $5E
+	jp nz, .notPsychic
+	ld a, 42
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notPsychic:
+	; SURF ($39) - 95 power water, smooth wave
+	cp $39
+	jp nz, .notSurf
+	ld a, 38
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notSurf:
+	; THUNDERBOLT ($55) - 95 power electric, sharp jolt
+	cp $55
+	jp nz, .notThunderbolt
+	ld a, 35
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notThunderbolt:
+	; FLAMETHROWER ($35) - 95 power fire, sustained burn
+	cp $35
+	jp nz, .notFlamethrower
+	ld a, 35
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notFlamethrower:
+	; ICE BEAM ($3A) - 95 power ice, smooth freeze
+	cp $3A
+	jp nz, .notIceBeam
+	ld a, 35
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notIceBeam:
+	; ROCK SLIDE ($9D) - 75 power rock, heavy impact
+	cp $9D
+	jp nz, .notRockSlide
+	ld a, 30
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notRockSlide:
+	; BODY SLAM ($22) - 85 power, solid thud
+	cp $22
+	jp nz, .notBodySlam
+	ld a, 28
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notBodySlam:
+	; SUBMISSION ($42) - 80 power fighting, recoil slam
+	cp $42
+	jp nz, .notSubmission
+	ld a, 26
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notSubmission:
+	; CRABHAMMER ($98) - 90 power water, crushing impact
+	cp $98
+	jp nz, .notCrabhammer
+	ld a, 38
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notCrabhammer:
+	; DIG ($5B) - 100 power ground, underground rumble
+	cp $5B
+	jp nz, .notDig
+	ld a, 45
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notDig:
+	; SLASH ($A3) - high crit, sharp quick slice
+	cp $A3
+	jp nz, .notSlash
+	ld a, 15
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notSlash:
+	; WRAP/FIRE SPIN ($23/$53) - trapping, sustained grind
+	cp $23
+	jp z, .trapMove
+	cp $53
+	jp nz, .notTrap
+.trapMove:
+	ld a, 25
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notTrap:
+	; KARATE CHOP ($02) - high crit, sharp crack
+	cp $02
+	jp nz, .notKarateChop
+	ld a, 14
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	jp .iconicDone
+.notKarateChop:
+	; STOMP ($17) - 65 power, heavy stomp thud
+	cp $17
+	jp nz, .iconicDone
+	ld a, 22
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+.iconicDone:
+	pop hl
+	pop bc
+	pop af
+	; === END RUMBLE ICONIC MOVES v1 ===
 
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
