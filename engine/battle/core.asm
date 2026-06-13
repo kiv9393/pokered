@@ -6956,197 +6956,197 @@ PlayMoveAnimation:
 	; Check each iconic move and set custom duration
 	; HYPER BEAM ($3F) - 150 power, massive sustained
 	cp $3F
-	jp nz, .notHyperBeam
+	jp nz, .notImImHyperBeam
 	ld a, 70
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notHyperBeam:
+.notImHyperBeam:
 	; EXPLOSION ($99) - 170 effective power, violent instant
 	cp $99
-	jp nz, .notExplosion
+	jp nz, .notImImExplosion
 	ld a, 60
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notExplosion:
+.notImExplosion:
 	; EARTHQUAKE ($59) - 100 power ground, heavy sustained
 	cp $59
-	jp nz, .notEarthquake
+	jp nz, .notImImEarthquake
 	ld a, 55
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notEarthquake:
+.notImEarthquake:
 	; BLIZZARD ($3B) - 120 power ice, smooth sustained
 	cp $3B
-	jp nz, .notBlizzard
+	jp nz, .notImImBlizzard
 	ld a, 50
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notBlizzard:
+.notImBlizzard:
 	; FIRE BLAST ($7E) - 120 power fire, intense burst
 	cp $7E
-	jp nz, .notFireBlast
+	jp nz, .notImImFireBlast
 	ld a, 48
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notFireBlast:
+.notImFireBlast:
 	; THUNDER ($57) - 120 power electric, violent jolt
 	cp $57
-	jp nz, .notThunder
+	jp nz, .notImImThunder
 	ld a, 45
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notThunder:
+.notImThunder:
 	; PSYCHIC ($5E) - 90 power, slow building wave
 	cp $5E
-	jp nz, .notPsychic
+	jp nz, .notImImPsychic
 	ld a, 42
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notPsychic:
+.notImPsychic:
 	; SURF ($39) - 95 power water, smooth wave
 	cp $39
-	jp nz, .notSurf
+	jp nz, .notImImSurf
 	ld a, 38
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notSurf:
+.notImSurf:
 	; THUNDERBOLT ($55) - 95 power electric, sharp jolt
 	cp $55
-	jp nz, .notThunderbolt
+	jp nz, .notImImThunderbolt
 	ld a, 35
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notThunderbolt:
+.notImThunderbolt:
 	; FLAMETHROWER ($35) - 95 power fire, sustained burn
 	cp $35
-	jp nz, .notFlamethrower
+	jp nz, .notImImFlamethrower
 	ld a, 35
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notFlamethrower:
+.notImFlamethrower:
 	; ICE BEAM ($3A) - 95 power ice, smooth freeze
 	cp $3A
-	jp nz, .notIceBeam
+	jp nz, .notImImIceBeam
 	ld a, 35
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notIceBeam:
+.notImIceBeam:
 	; ROCK SLIDE ($9D) - 75 power rock, heavy impact
 	cp $9D
-	jp nz, .notRockSlide
+	jp nz, .notImImRockSlide
 	ld a, 30
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notRockSlide:
+.notImRockSlide:
 	; BODY SLAM ($22) - 85 power, solid thud
 	cp $22
-	jp nz, .notBodySlam
+	jp nz, .notImImBodySlam
 	ld a, 28
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notBodySlam:
+.notImBodySlam:
 	; SUBMISSION ($42) - 80 power fighting, recoil slam
 	cp $42
-	jp nz, .notSubmission
+	jp nz, .notImImSubmission
 	ld a, 26
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notSubmission:
+.notImSubmission:
 	; CRABHAMMER ($98) - 90 power water, crushing impact
 	cp $98
-	jp nz, .notCrabhammer
+	jp nz, .notImImCrabhammer
 	ld a, 38
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notCrabhammer:
+.notImCrabhammer:
 	; DIG ($5B) - 100 power ground, underground rumble
 	cp $5B
-	jp nz, .notDig
+	jp nz, .notImImDig
 	ld a, 45
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notDig:
+.notImDig:
 	; SLASH ($A3) - high crit, sharp quick slice
 	cp $A3
-	jp nz, .notSlash
+	jp nz, .notImImSlash
 	ld a, 15
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notSlash:
+.notImSlash:
 	; WRAP/FIRE SPIN ($23/$53) - trapping, sustained grind
 	cp $23
-	jp z, .trapMove
+	jp z, .imTrapMove
 	cp $53
-	jp nz, .notTrap
-.trapMove:
+	jp nz, .notImImTrap
+.imTrapMove:
 	ld a, 25
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notTrap:
+.notImTrap:
 	; KARATE CHOP ($02) - high crit, sharp crack
 	cp $02
-	jp nz, .notKarateChop
+	jp nz, .notImImKarateChop
 	ld a, 14
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	jp .iconicDone
-.notKarateChop:
+.notImKarateChop:
 	; STOMP ($17) - 65 power, heavy stomp thud
 	cp $17
 	jp nz, .iconicDone
