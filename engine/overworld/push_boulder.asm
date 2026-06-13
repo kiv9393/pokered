@@ -103,8 +103,7 @@ DoBoulderDustAnimation::
 	ld [$C6FA], a
 	ld a, 20
 	ld [$C6F9], a
-	ld a, [$C6F8]
-	or $08
+	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	pop af
@@ -123,8 +122,7 @@ DoBoulderDustAnimation::
 	ld [$C6FA], a
 	ld a, 8
 	ld [$C6F9], a
-	ld a, [$C6F8]
-	or $08
+	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	pop af

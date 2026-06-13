@@ -501,8 +501,7 @@ HandlePoisonBurnLeechSeed:
 	ld [$C6FA], a
 	ld a, 12
 	ld [$C6F9], a
-	ld a, [$C6F8]
-	or $08
+	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a              ; signal: poison/burn tick
 .skipPoisonRumble:
@@ -2293,8 +2292,7 @@ UseBagItem:
 	ld [$C6FA], a
 	ld a, 30
 	ld [$C6F9], a
-	ld a, [$C6F8]
-	or $08
+	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	pop af
@@ -3490,8 +3488,7 @@ CheckPlayerStatusConditions:
 	ld [$C6FA], a
 	ld a, 10
 	ld [$C6F9], a
-	ld a, [$C6F8]
-	or $08
+	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	pop af
@@ -5630,8 +5627,7 @@ PlayEnemyMoveAnimation:
 	ld a, 25
 .enMot2Fire:
 	ld [$C6F9], a
-	ld a, [$C6F8]
-	or $08
+	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	ld a, [wEnemyMovePower]
@@ -6756,8 +6752,7 @@ PlayMoveAnimation:
 	ld a, 35
 .mot7Fire:
 	ld [$C6F9], a
-	ld a, [$C6F8]
-	or $08
+	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	ld a, [wPlayerMovePower]

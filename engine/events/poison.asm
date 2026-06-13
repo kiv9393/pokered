@@ -95,8 +95,7 @@ ApplyOutOfBattlePoisonDamage:
 	ld [$C6FA], a
 	ld a, 12
 	ld [$C6F9], a
-	ld a, [$C6F8]
-	or $08
+	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	pop af
