@@ -6840,6 +6840,111 @@ PlayMoveAnimation:
 	pop bc
 	pop af
 	; === END RUMBLE ON v7 ===
+	; === RUMBLE TYPE TEXTURE v1 - player move type overlay ===
+	push af
+	push bc
+	ld a, [wPlayerMovePower]
+	and a
+	jr z, .skipTypeRumble   ; skip status moves
+	cp 2
+	jr c, .skipTypeRumble
+	ld a, [wPlayerMoveType]
+	; ELECTRIC ($17) - sharp violent jolt: override with shorter sharper buzz
+	cp $17
+	jr nz, .notElectric
+	ld a, [wC6F9]           ; get current countdown
+	; Electric: cut duration by 40%, add extra pulse signal
+	ld a, $01
+	ld [$C6F7], a           ; texture signal: electric
+	jr .typeTextureDone
+.notElectric:
+	; GROUND ($04) - heavy shake: extend duration by 50%
+	cp $04
+	jr nz, .notGround
+	ld a, [$C6F9]
+	srl a                   ; a = duration/2
+	ld b, a
+	ld a, [$C6F9]
+	add b                   ; duration * 1.5
+	ld [$C6F9], a           ; extend countdown
+	ld a, $02
+	ld [$C6F7], a           ; texture: ground
+	jr .typeTextureDone
+.notGround:
+	; PSYCHIC ($18) - slow wave: slightly extend
+	cp $18
+	jr nz, .notPsychic
+	ld a, [$C6F9]
+	srl a
+	ld b, a
+	ld a, [$C6F9]
+	add b
+	ld [$C6F9], a
+	ld a, $03
+	ld [$C6F7], a           ; texture: psychic
+	jr .typeTextureDone
+.notPsychic:
+	; FIRE ($14) - staccato: shorten slightly for rapid feel
+	cp $14
+	jr nz, .notFire
+	ld a, [$C6F9]
+	srl a
+	srl a
+	ld b, a
+	ld a, [$C6F9]
+	sub b                   ; duration * 0.75
+	ld [$C6F9], a
+	ld a, $04
+	ld [$C6F7], a           ; texture: fire
+	jr .typeTextureDone
+.notFire:
+	; WATER ($15) / ICE ($19) - smooth: extend slightly
+	cp $15
+	jr z, .waterIce
+	cp $19
+	jr nz, .notWaterIce
+.waterIce:
+	ld a, [$C6F9]
+	srl a
+	ld b, a
+	ld a, [$C6F9]
+	add b                   ; duration * 1.25 ish
+	ld [$C6F9], a
+	ld a, $05
+	ld [$C6F7], a           ; texture: water/ice
+	jr .typeTextureDone
+.notWaterIce:
+	; GHOST ($08) - eerie: shorter but will pulse
+	cp $08
+	jr nz, .notGhost
+	ld a, $06
+	ld [$C6F7], a           ; texture: ghost
+	jr .typeTextureDone
+.notGhost:
+	; DRAGON ($1A) - maximum: extend significantly
+	cp $1A
+	jr nz, .notDragon
+	ld a, [$C6F9]
+	srl a
+	ld b, a
+	ld a, [$C6F9]
+	add b
+	ld b, a
+	ld a, [$C6F9]
+	add b                   ; duration * 2
+	ld [$C6F9], a
+	ld a, $07
+	ld [$C6F7], a           ; texture: dragon
+	jr .typeTextureDone
+.notDragon:
+	; Default: no texture modification
+	ld a, $00
+	ld [$C6F7], a
+.typeTextureDone:
+.skipTypeRumble:
+	pop bc
+	pop af
+	; === END RUMBLE TYPE TEXTURE v1 ===
 
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
