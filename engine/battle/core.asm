@@ -6852,7 +6852,7 @@ PlayMoveAnimation:
 	; ELECTRIC ($17) - sharp violent jolt: override with shorter sharper buzz
 	cp $17
 	jp nz, .notElectric
-	ld a, [wC6F9]           ; get current countdown
+	ld a, [$C6F9]           ; get current countdown
 	; Electric: cut duration by 40%, add extra pulse signal
 	ld a, $01
 	ld [$C6F7], a           ; texture signal: electric
