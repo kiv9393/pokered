@@ -4713,6 +4713,31 @@ ApplyAttackToEnemyPokemon:
 	ld [hl], a
 
 ApplyDamageToEnemyPokemon:
+	; === RUMBLE IMPACT ENEMY v1 - heavy hit lands on enemy ===
+	push af
+	push bc
+	ld a, [wPlayerMovePower]
+	cp 81               ; only HEAVY (81+) gets impact buzz
+	jr c, .skipImpactEn
+	cp 111
+	jr c, .impactEnHeavy
+	; MAX tier impact
+	ld a, 20
+	jr .impactEnFire
+.impactEnHeavy:
+	ld a, 12
+	jr .impactEnFire
+.skipImpactEn:
+	jr .impactEnDone
+.impactEnFire:
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+.impactEnDone:
+	pop bc
+	pop af
+	; === END RUMBLE IMPACT ENEMY v1 ===
 	ld hl, wDamage
 	ld a, [hli]
 	ld b, a
@@ -4832,6 +4857,42 @@ ApplyAttackToPlayerPokemon:
 	ld [hl], a
 
 ApplyDamageToPlayerPokemon:
+	; === RUMBLE IMPACT PLAYER v1 - taking damage ===
+	push af
+	push bc
+	ld a, [wEnemyMovePower]
+	and a
+	jr z, .skipImpactPl
+	cp 2
+	jr c, .skipImpactPl
+	cp 41
+	jr c, .impactPlWeak
+	cp 81
+	jr c, .impactPlMed
+	cp 111
+	jr c, .impactPlHeavy
+	ld a, 35
+	jr .impactPlFire
+.impactPlWeak:
+	ld a, 6
+	jr .impactPlFire
+.impactPlMed:
+	ld a, 14
+	jr .impactPlFire
+.impactPlHeavy:
+	ld a, 22
+	jr .impactPlFire
+.skipImpactPl:
+	jr .impactPlDone
+.impactPlFire:
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+.impactPlDone:
+	pop bc
+	pop af
+	; === END RUMBLE IMPACT PLAYER v1 ===
 	ld hl, wDamage
 	ld a, [hli]
 	ld b, a

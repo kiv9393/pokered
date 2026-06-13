@@ -66,6 +66,15 @@ TryPushingBoulder::
 	call MoveSprite
 	ld a, SFX_PUSH_BOULDER
 	call PlaySound
+	; === RUMBLE BOULDER v2 - push: hard initial buzz ===
+	push af
+	ld a, 18          ; harder initial push buzz
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+	pop af
+	; === END RUMBLE BOULDER v2 ===
 	; === RUMBLE STRENGTH v1 - boulder push step ===
 	push af
 	ld a, $0B
@@ -97,17 +106,17 @@ DoBoulderDustAnimation::
 	bit BIT_SCRIPTED_NPC_MOVEMENT, a
 	ret nz
 	callfar AnimateBoulderDust
-	; === RUMBLE BOULDER SETTLE v1 ===
+	; === RUMBLE BOULDER SETTLE v2 - soft settle ===
 	push af
 	ld a, $0D
 	ld [$C6FA], a
-	ld a, 20
+	ld a, 10          ; lighter settle buzz
 	ld [$C6F9], a
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 	pop af
-	; === END RUMBLE BOULDER SETTLE v1 ===
+	; === END RUMBLE BOULDER SETTLE v2 ===
 	call DiscardButtonPresses
 	ld [wJoyIgnore], a
 	call ResetBoulderPushFlags
