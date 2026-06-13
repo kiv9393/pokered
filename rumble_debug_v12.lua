@@ -1,24 +1,17 @@
 -- Rumble v12: Full diagnostic for type textures + iconic move tuning
--- Shows exact countdown values, type, move number, power in real time
--- C6FC: player move tier (1-4)
--- C6FB: enemy move tier (1-4)
--- C6FD: crit flag
--- C6FA: special signals (5-13)
--- C6F9: current motor countdown
--- C6F7: type texture tag
 
 local MOVE_NAMES = {
-    [0x02]="KarateChop", [0x0E]="SwordsDance", [0x13]="Fly",
-    [0x17]="Stomp",      [0x22]="BodySlam",    [0x23]="Wrap",
-    [0x35]="Flamethrow", [0x39]="Surf",        [0x3A]="IceBeam",
-    [0x3B]="Blizzard",   [0x3F]="HyperBeam",  [0x42]="Submission",
-    [0x45]="SeismicToss",[0x48]="MegaDrain",   [0x53]="FireSpin",
-    [0x54]="Thundershck",[0x55]="Thunderbolt", [0x56]="ThunderWave",
-    [0x57]="Thunder",    [0x59]="Earthquake",  [0x5B]="Dig",
-    [0x5C]="Toxic",      [0x5E]="Psychic",     [0x61]="Agility",
-    [0x7E]="FireBlast",  [0x85]="Amnesia",     [0x98]="Crabhammer",
-    [0x99]="Explosion",  [0x9C]="Rest",        [0x9D]="RockSlide",
-    [0xA3]="Slash",      [0xA4]="Substitute",
+    [0x02]="KarateChop",  [0x0E]="SwordsDance", [0x13]="Fly",
+    [0x17]="Stomp",       [0x22]="BodySlam",     [0x23]="Wrap",
+    [0x35]="Flamethrow",  [0x39]="Surf",         [0x3A]="IceBeam",
+    [0x3B]="Blizzard",    [0x3F]="HyperBeam",    [0x42]="Submission",
+    [0x45]="SeismicToss", [0x48]="MegaDrain",    [0x53]="FireSpin",
+    [0x54]="Thundershck", [0x55]="Thunderbolt",  [0x56]="ThunderWave",
+    [0x57]="Thunder",     [0x59]="Earthquake",   [0x5B]="Dig",
+    [0x5C]="Toxic",       [0x5E]="Psychic",      [0x61]="Agility",
+    [0x7E]="FireBlast",   [0x85]="Amnesia",      [0x98]="Crabhammer",
+    [0x99]="Explosion",   [0x9C]="Rest",         [0x9D]="RockSlide",
+    [0xA3]="Slash",       [0xA4]="Substitute",
 }
 
 local TYPE_NAMES = {
@@ -31,18 +24,18 @@ local TYPE_NAMES = {
 }
 
 local TEXTURE_NAMES = {
-    [0x00]="default",   [0x01]="electric", [0x02]="ground",
-    [0x03]="psychic",   [0x04]="fire",     [0x05]="water/ice",
-    [0x06]="ghost",     [0x07]="dragon",
+    [0x00]="default",  [0x01]="electric", [0x02]="ground",
+    [0x03]="psychic",  [0x04]="fire",     [0x05]="water-ice",
+    [0x06]="ghost",    [0x07]="dragon",
 }
 
 local TIER_NAMES = {
-    [1]="WEAK(8f)", [2]="MEDIUM(20f)", [3]="HEAVY(35f)", [4]="MAX(55f)"
+    [1]="WEAK-8f", [2]="MEDIUM-20f", [3]="HEAVY-35f", [4]="MAX-55f"
 }
 
 local SIGNALS = {
-    [5]="BALL SHAKE", [6]="CAUGHT!", [7]="POISON/BURN",
-    [8]="PARALYZED!", [9]="FAINT",   [10]="CUT tree",
+    [5]="BALL SHAKE", [6]="CAUGHT",    [7]="POISON-BURN",
+    [8]="PARALYZED",  [9]="FAINT",     [10]="CUT tree",
     [11]="CUT slash", [12]="BOULDER push", [13]="BOULDER settle",
 }
 
@@ -62,7 +55,7 @@ callbacks:add("frame", function()
 
     if frameCount - lastHeartbeat >= HEARTBEAT then
         lastHeartbeat = frameCount
-        console:log("[" .. frameCount .. "] ♥ alive | events: " .. sessionEvents)
+        console:log("[" .. frameCount .. "] alive | events: " .. sessionEvents)
     end
 
     local playerTier = emu:read8(0xC6FC)
@@ -71,139 +64,41 @@ callbacks:add("frame", function()
     local sig        = emu:read8(0xC6FA)
     local countdown  = emu:read8(0xC6F9)
     local texture    = emu:read8(0xC6F7)
+    local moveNum    = emu:read8(0xD11C)
+    local movePower  = emu:read8(0xD11E)
+    local moveType   = emu:read8(0xD11F)
 
-    -- Read move info from RAM
-    local moveNum   = emu:read8(0xD11C)
-    local movePower = emu:read8(0xD11E)
-    local moveType  = emu:read8(0xD11F)
-
-    -- Detect new player move signal
     if playerTier >= 1 and playerTier <= 4 and playerTier ~= lastPlayerTier then
         emu:write8(0xC6FC, 0)
         emu:write8(0xC6FD, 0)
         sessionEvents = sessionEvents + 1
-        local moveName = MOVE_NAMES[moveNum] or string.format("Move$%02X", moveNum)
-        local typeName = TYPE_NAMES[moveType] or string.format("Type$%02X", moveType)
-        local texName  = TEXTURE_NAMES[texture] or string.format("Tex$%02X", texture)
-        local tierName = TIER_NAMES[playerTier] or "?"
-        local critStr  = isCrit > 0 and " +CRIT" or ""
-        console:log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        console:log("[" .. frameCount .. "] ▶ YOU #" .. sessionEvents .. critStr)
-        console:log("  Move:    " .. moveName .. " (pwr:" .. movePower .. ")")
-        console:log("  Type:    " .. typeName .. " | texture: " .. texName)
-        console:log("  Tier:
-cd /workspaces/pokered && cat > /workspaces/pokered/rumble_debug_v12.lua << 'LUAEOF'
--- Rumble v12: Full diagnostic for type textures + iconic move tuning
--- Shows exact countdown values, type, move number, power in real time
--- C6FC: player move tier (1-4)
--- C6FB: enemy move tier (1-4)
--- C6FD: crit flag
--- C6FA: special signals (5-13)
--- C6F9: current motor countdown
--- C6F7: type texture tag
-
-local MOVE_NAMES = {
-    [0x02]="KarateChop", [0x0E]="SwordsDance", [0x13]="Fly",
-    [0x17]="Stomp",      [0x22]="BodySlam",    [0x23]="Wrap",
-    [0x35]="Flamethrow", [0x39]="Surf",        [0x3A]="IceBeam",
-    [0x3B]="Blizzard",   [0x3F]="HyperBeam",  [0x42]="Submission",
-    [0x45]="SeismicToss",[0x48]="MegaDrain",   [0x53]="FireSpin",
-    [0x54]="Thundershck",[0x55]="Thunderbolt", [0x56]="ThunderWave",
-    [0x57]="Thunder",    [0x59]="Earthquake",  [0x5B]="Dig",
-    [0x5C]="Toxic",      [0x5E]="Psychic",     [0x61]="Agility",
-    [0x7E]="FireBlast",  [0x85]="Amnesia",     [0x98]="Crabhammer",
-    [0x99]="Explosion",  [0x9C]="Rest",        [0x9D]="RockSlide",
-    [0xA3]="Slash",      [0xA4]="Substitute",
-}
-
-local TYPE_NAMES = {
-    [0x00]="Normal",   [0x01]="Fighting", [0x02]="Flying",
-    [0x03]="Poison",   [0x04]="Ground",   [0x05]="Rock",
-    [0x06]="Bird",     [0x07]="Bug",      [0x08]="Ghost",
-    [0x14]="Fire",     [0x15]="Water",    [0x16]="Grass",
-    [0x17]="Electric", [0x18]="Psychic",  [0x19]="Ice",
-    [0x1A]="Dragon",
-}
-
-local TEXTURE_NAMES = {
-    [0x00]="default",   [0x01]="electric", [0x02]="ground",
-    [0x03]="psychic",   [0x04]="fire",     [0x05]="water/ice",
-    [0x06]="ghost",     [0x07]="dragon",
-}
-
-local TIER_NAMES = {
-    [1]="WEAK(8f)", [2]="MEDIUM(20f)", [3]="HEAVY(35f)", [4]="MAX(55f)"
-}
-
-local SIGNALS = {
-    [5]="BALL SHAKE", [6]="CAUGHT!", [7]="POISON/BURN",
-    [8]="PARALYZED!", [9]="FAINT",   [10]="CUT tree",
-    [11]="CUT slash", [12]="BOULDER push", [13]="BOULDER settle",
-}
-
-local frameCount = 0
-local lastHeartbeat = 0
-local HEARTBEAT = 60 * 60
-local sessionEvents = 0
-local lastCountdown = 0
-local buzzActive = false
-local buzzStartFrame = 0
-local peakCountdown = 0
-local lastPlayerTier = 0
-local lastEnemyTier = 0
-
-callbacks:add("frame", function()
-    frameCount = frameCount + 1
-
-    if frameCount - lastHeartbeat >= HEARTBEAT then
-        lastHeartbeat = frameCount
-        console:log("[" .. frameCount .. "] ♥ alive | events: " .. sessionEvents)
-    end
-
-    local playerTier = emu:read8(0xC6FC)
-    local enemyTier  = emu:read8(0xC6FB)
-    local isCrit     = emu:read8(0xC6FD)
-    local sig        = emu:read8(0xC6FA)
-    local countdown  = emu:read8(0xC6F9)
-    local texture    = emu:read8(0xC6F7)
-
-    -- Read move info from RAM
-    local moveNum   = emu:read8(0xD11C)
-    local movePower = emu:read8(0xD11E)
-    local moveType  = emu:read8(0xD11F)
-
-    -- Detect new player move signal
-    if playerTier >= 1 and playerTier <= 4 and playerTier ~= lastPlayerTier then
-        emu:write8(0xC6FC, 0)
-        emu:write8(0xC6FD, 0)
-        sessionEvents = sessionEvents + 1
-        local moveName = MOVE_NAMES[moveNum] or string.format("Move$%02X", moveNum)
-        local typeName = TYPE_NAMES[moveType] or string.format("Type$%02X", moveType)
-        local texName  = TEXTURE_NAMES[texture] or string.format("Tex$%02X", texture)
-        local tierName = TIER_NAMES[playerTier] or "?"
-        local critStr  = isCrit > 0 and " +CRIT" or ""
-        console:log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        console:log("[" .. frameCount .. "] ▶ YOU #" .. sessionEvents .. critStr)
-        console:log("  Move:    " .. moveName .. " (pwr:" .. movePower .. ")")
-        console:log("  Type:    " .. typeName .. " | texture: " .. texName)
-        console:log("  Tier:    " .. tierName)
-        console:log("  Buzz:    " .. countdown .. "f = " .. math.floor(countdown * 16.67) .. "ms")
-        console:log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        local moveName = MOVE_NAMES[moveNum] or ("Move" .. string.format("%02X", moveNum))
+        local typeName = TYPE_NAMES[moveType] or ("Type" .. string.format("%02X", moveType))
+        local texName  = TEXTURE_NAMES[texture] or ("Tex" .. string.format("%02X", texture))
+        local tierName = TIER_NAMES[playerTier] or "unknown"
+        local critStr  = isCrit > 0 and " CRIT" or ""
+        local ms       = math.floor(countdown * 16.67)
+        console:log("-----------------------------------")
+        console:log("[" .. frameCount .. "] YOU #" .. sessionEvents .. critStr)
+        console:log("  Move: " .. moveName .. " pwr=" .. movePower)
+        console:log("  Type: " .. typeName .. " tex=" .. texName)
+        console:log("  Tier: " .. tierName)
+        console:log("  Buzz: " .. countdown .. "f = " .. ms .. "ms")
+        console:log("-----------------------------------")
     end
     lastPlayerTier = playerTier
 
-    -- Detect new enemy move signal
     if enemyTier >= 1 and enemyTier <= 4 and enemyTier ~= lastEnemyTier then
         emu:write8(0xC6FB, 0)
         sessionEvents = sessionEvents + 1
-        console:log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        console:log("[" .. frameCount .. "] ◀ FOE #" .. sessionEvents)
-        console:log("  Buzz:    " .. countdown .. "f = " .. math.floor(countdown * 16.67) .. "ms")
-        console:log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        local ms = math.floor(countdown * 16.67)
+        console:log("-----------------------------------")
+        console:log("[" .. frameCount .. "] FOE #" .. sessionEvents)
+        console:log("  Buzz: " .. countdown .. "f = " .. ms .. "ms")
+        console:log("-----------------------------------")
     end
     lastEnemyTier = enemyTier
 
-    -- Track buzz duration
     if countdown > lastCountdown and countdown > 5 then
         buzzActive = true
         peakCountdown = countdown
@@ -212,11 +107,11 @@ callbacks:add("frame", function()
     if buzzActive and countdown == 0 and lastCountdown > 0 then
         buzzActive = false
         local actual = frameCount - buzzStartFrame
-        console:log("  ✓ buzz done | peak:" .. peakCountdown .. "f actual:" .. actual .. "f (" .. math.floor(actual * 16.67) .. "ms)")
+        local ms = math.floor(actual * 16.67)
+        console:log("  done | peak=" .. peakCountdown .. "f actual=" .. actual .. "f " .. ms .. "ms")
     end
     lastCountdown = countdown
 
-    -- Special signals
     if sig >= 5 and SIGNALS[sig] then
         emu:write8(0xC6FA, 0)
         sessionEvents = sessionEvents + 1
@@ -224,6 +119,5 @@ callbacks:add("frame", function()
     end
 end)
 
-console:log("╔══════════════════════════════════════╗")
-console:log("║   Rumble v12 | Move Diagnostic Tool ║")
-console:log("╚══════════════════════════════════════╝")
+console:log("Rumble v12 loaded - Move Diagnostic Tool")
+console:log("Watching: C6FC C6FB C6FD C6FA C6F9 C6F7")
