@@ -6840,6 +6840,107 @@ PlayMoveAnimation:
 	pop bc
 	pop af
 	; === END RUMBLE ON v7 ===
+	; === RUMBLE ICONIC MOVES v1 ===
+	push af
+	push bc
+	push hl
+	ld a, [wPlayerMovePower]
+	and a
+	jp z, .imDone
+	ld a, [wPlayerMoveNum]
+	cp $3F ; HYPER BEAM
+	jp nz, .im01
+	ld a, 70
+	jp .imFire
+.im01: cp $99 ; EXPLOSION
+	jp nz, .im02
+	ld a, 60
+	jp .imFire
+.im02: cp $59 ; EARTHQUAKE
+	jp nz, .im03
+	ld a, 55
+	jp .imFire
+.im03: cp $3B ; BLIZZARD
+	jp nz, .im04
+	ld a, 50
+	jp .imFire
+.im04: cp $7E ; FIRE BLAST
+	jp nz, .im05
+	ld a, 48
+	jp .imFire
+.im05: cp $57 ; THUNDER
+	jp nz, .im06
+	ld a, 45
+	jp .imFire
+.im06: cp $5B ; DIG
+	jp nz, .im07
+	ld a, 45
+	jp .imFire
+.im07: cp $5E ; PSYCHIC
+	jp nz, .im08
+	ld a, 42
+	jp .imFire
+.im08: cp $39 ; SURF
+	jp nz, .im09
+	ld a, 38
+	jp .imFire
+.im09: cp $98 ; CRABHAMMER
+	jp nz, .im10
+	ld a, 38
+	jp .imFire
+.im10: cp $55 ; THUNDERBOLT
+	jp nz, .im11
+	ld a, 35
+	jp .imFire
+.im11: cp $35 ; FLAMETHROWER
+	jp nz, .im12
+	ld a, 35
+	jp .imFire
+.im12: cp $3A ; ICE BEAM
+	jp nz, .im13
+	ld a, 35
+	jp .imFire
+.im13: cp $9D ; ROCK SLIDE
+	jp nz, .im14
+	ld a, 30
+	jp .imFire
+.im14: cp $22 ; BODY SLAM
+	jp nz, .im15
+	ld a, 28
+	jp .imFire
+.im15: cp $42 ; SUBMISSION
+	jp nz, .im16
+	ld a, 26
+	jp .imFire
+.im16: cp $23 ; WRAP
+	jp nz, .im17
+	ld a, 25
+	jp .imFire
+.im17: cp $53 ; FIRE SPIN
+	jp nz, .im18
+	ld a, 25
+	jp .imFire
+.im18: cp $17 ; STOMP
+	jp nz, .im19
+	ld a, 22
+	jp .imFire
+.im19: cp $A3 ; SLASH
+	jp nz, .im20
+	ld a, 15
+	jp .imFire
+.im20: cp $02 ; KARATE CHOP
+	jp nz, .imDone
+	ld a, 14
+.imFire:
+	ld [$C6F9], a
+	ld a, $08
+	ld [$C6F8], a
+	ld [$4000], a
+.imDone:
+	pop hl
+	pop bc
+	pop af
+	; === END RUMBLE ICONIC MOVES v1 ===
 	; === RUMBLE TYPE TEXTURE v1 - player move type overlay ===
 	push af
 	push bc
@@ -6945,107 +7046,6 @@ PlayMoveAnimation:
 	pop bc
 	pop af
 	; === END RUMBLE TYPE TEXTURE v1 ===
-	; === RUMBLE ICONIC MOVES v1 ===
-	push af
-	push bc
-	push hl
-	ld a, [wPlayerMovePower]
-	and a
-	jp z, .imDone
-	ld a, [wPlayerMoveNum]
-	cp $3F ; HYPER BEAM
-	jp nz, .im01
-	ld a, 70
-	jp .imFire
-.im01: cp $99 ; EXPLOSION
-	jp nz, .im02
-	ld a, 60
-	jp .imFire
-.im02: cp $59 ; EARTHQUAKE
-	jp nz, .im03
-	ld a, 55
-	jp .imFire
-.im03: cp $3B ; BLIZZARD
-	jp nz, .im04
-	ld a, 50
-	jp .imFire
-.im04: cp $7E ; FIRE BLAST
-	jp nz, .im05
-	ld a, 48
-	jp .imFire
-.im05: cp $57 ; THUNDER
-	jp nz, .im06
-	ld a, 45
-	jp .imFire
-.im06: cp $5B ; DIG
-	jp nz, .im07
-	ld a, 45
-	jp .imFire
-.im07: cp $5E ; PSYCHIC
-	jp nz, .im08
-	ld a, 42
-	jp .imFire
-.im08: cp $39 ; SURF
-	jp nz, .im09
-	ld a, 38
-	jp .imFire
-.im09: cp $98 ; CRABHAMMER
-	jp nz, .im10
-	ld a, 38
-	jp .imFire
-.im10: cp $55 ; THUNDERBOLT
-	jp nz, .im11
-	ld a, 35
-	jp .imFire
-.im11: cp $35 ; FLAMETHROWER
-	jp nz, .im12
-	ld a, 35
-	jp .imFire
-.im12: cp $3A ; ICE BEAM
-	jp nz, .im13
-	ld a, 35
-	jp .imFire
-.im13: cp $9D ; ROCK SLIDE
-	jp nz, .im14
-	ld a, 30
-	jp .imFire
-.im14: cp $22 ; BODY SLAM
-	jp nz, .im15
-	ld a, 28
-	jp .imFire
-.im15: cp $42 ; SUBMISSION
-	jp nz, .im16
-	ld a, 26
-	jp .imFire
-.im16: cp $23 ; WRAP
-	jp nz, .im17
-	ld a, 25
-	jp .imFire
-.im17: cp $53 ; FIRE SPIN
-	jp nz, .im18
-	ld a, 25
-	jp .imFire
-.im18: cp $17 ; STOMP
-	jp nz, .im19
-	ld a, 22
-	jp .imFire
-.im19: cp $A3 ; SLASH
-	jp nz, .im20
-	ld a, 15
-	jp .imFire
-.im20: cp $02 ; KARATE CHOP
-	jp nz, .imDone
-	ld a, 14
-.imFire:
-	ld [$C6F9], a
-	ld a, $08
-	ld [$C6F8], a
-	ld [$4000], a
-.imDone:
-	pop hl
-	pop bc
-	pop af
-	; === END RUMBLE ICONIC MOVES v1 ===
 
 	ld [wAnimationID], a
 	vc_hook_red Reduce_move_anim_flashing_Confusion
