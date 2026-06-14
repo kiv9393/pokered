@@ -36,22 +36,23 @@ VBlank::
 
 	call Random
 
-	; === RUMBLE VBLANK v4 - countdown only, no $4000 write ===
-	; Motor ON is written directly by each event.
-	; We just count down and let the game's own rRAMB writes cut the motor.
-	; This avoids all RAM bank corruption.
+	; === RUMBLE VBLANK v5 - safe init + countdown ===
+	; Guard: only act if C6F8 has been set (motor was intentionally fired)
+	ld a, [$C6F8]
+	and a
+	jr z, .rumbleDone  ; C6F8=0 means motor never initialized, skip
 	ld a, [$C6F9]
 	and a
 	jr z, .rumbleDone
 	dec a
 	ld [$C6F9], a
-	; When counter hits zero, write rumble OFF safely using current rRAMB value
 	jr nz, .rumbleDone
-	ld a, [$C6F8]     ; load last known rRAMB value written by game
-	and $F7           ; clear bit3 only = motor off
+	; Counter hit zero - turn motor off
+	ld a, [$C6F8]
+	and $F7
 	ld [$4000], a
 .rumbleDone
-	; === END RUMBLE VBLANK v4 ===
+	; === END RUMBLE VBLANK v5 ===
 
 	ldh a, [hVBlankOccurred]
 	and a

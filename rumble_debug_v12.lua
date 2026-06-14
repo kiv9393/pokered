@@ -7,7 +7,7 @@ local MOVE_NAMES = {
     [0x02]="KarateChop",  [0x0E]="SwordsDance", [0x13]="Fly",
     [0x17]="Stomp",       [0x22]="BodySlam",     [0x23]="Wrap",
     [0x35]="Flamethrow",  [0x39]="Surf",         [0x3A]="IceBeam",
-    [0x3B]="Blizzard",    [0x3F]="HyperBeam",    [0x42]="Submission",
+    [0x38]="HydroPump",    [0x3B]="Blizzard",    [0x3F]="HyperBeam",    [0x42]="Submission",
     [0x45]="SeismicToss", [0x48]="MegaDrain",    [0x53]="FireSpin",
     [0x54]="Thundershck", [0x55]="Thunderbolt",  [0x56]="ThunderWave",
     [0x57]="Thunder",     [0x59]="Earthquake",   [0x5B]="Dig",
@@ -15,6 +15,8 @@ local MOVE_NAMES = {
     [0x7E]="FireBlast",   [0x85]="Amnesia",      [0x98]="Crabhammer",
     [0x99]="Explosion",   [0x9C]="Rest",         [0x9D]="RockSlide",
     [0xA3]="Slash",       [0xA4]="Substitute",
+    [0x09]="ThunderPunch",[0x80]="Clamp",      [0x81]="Swift",
+    [0x82]="SkullBash",   [0x19]="RazorLeaf",  [0x28]="Sand-Attack",
 }
 
 local TYPE_NAMES = {
