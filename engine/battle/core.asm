@@ -6787,6 +6787,10 @@ PlayMoveAnimation:
 	; === RUMBLE ON v7 - direct motor + WRAM signal ===
 	push af
 	push bc
+	; Only fire on player's actual attack turn
+	ldh a, [hWhoseTurn]
+	and a
+	jr nz, .skipMot7    ; skip if enemy's turn
 	ld a, [wPlayerMovePower]
 	and a
 	jr z, .skipMot7
