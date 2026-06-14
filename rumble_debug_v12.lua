@@ -1,4 +1,7 @@
--- Rumble v12: Full diagnostic for type textures + iconic move tuning
+-- Rumble v12.1: Fixed RAM addresses + mystery buzz detection
+-- wPlayerMoveNum  = $CFD2
+-- wPlayerMovePower = $CFD4
+-- wPlayerMoveType  = $CFD5
 
 local MOVE_NAMES = {
     [0x02]="KarateChop",  [0x0E]="SwordsDance", [0x13]="Fly",
@@ -49,6 +52,7 @@ local buzzStartFrame = 0
 local peakCountdown = 0
 local lastPlayerTier = 0
 local lastEnemyTier = 0
+local mysteryBuzzThreshold = 60
 
 callbacks:add("frame", function()
     frameCount = frameCount + 1
@@ -64,9 +68,11 @@ callbacks:add("frame", function()
     local sig        = emu:read8(0xC6FA)
     local countdown  = emu:read8(0xC6F9)
     local texture    = emu:read8(0xC6F7)
-    local moveNum    = emu:read8(0xD11C)
-    local movePower  = emu:read8(0xD11E)
-    local moveType   = emu:read8(0xD11F)
+
+    -- FIXED RAM addresses
+    local moveNum   = emu:read8(0xCFD2)
+    local movePower = emu:read8(0xCFD4)
+    local moveType  = emu:read8(0xCFD5)
 
     if playerTier >= 1 and playerTier <= 4 and playerTier ~= lastPlayerTier then
         emu:write8(0xC6FC, 0)
@@ -99,16 +105,20 @@ callbacks:add("frame", function()
     end
     lastEnemyTier = enemyTier
 
+    -- Buzz tracking with mystery buzz detection
     if countdown > lastCountdown and countdown > 5 then
         buzzActive = true
         peakCountdown = countdown
         buzzStartFrame = frameCount
+        if countdown > mysteryBuzzThreshold and playerTier == 0 and enemyTier == 0 and sig == 0 then
+            console:log("*** MYSTERY BUZZ at frame " .. frameCount .. " countdown=" .. countdown .. "f - no move/signal triggered this!")
+        end
     end
     if buzzActive and countdown == 0 and lastCountdown > 0 then
         buzzActive = false
         local actual = frameCount - buzzStartFrame
         local ms = math.floor(actual * 16.67)
-        console:log("  done | peak=" .. peakCountdown .. "f actual=" .. actual .. "f " .. ms .. "ms")
+        console:log("  done peak=" .. peakCountdown .. "f actual=" .. actual .. "f " .. ms .. "ms")
     end
     lastCountdown = countdown
 
@@ -119,5 +129,5 @@ callbacks:add("frame", function()
     end
 end)
 
-console:log("Rumble v12 loaded - Move Diagnostic Tool")
-console:log("Watching: C6FC C6FB C6FD C6FA C6F9 C6F7")
+console:log("Rumble v12.1 - Fixed addresses")
+console:log("MoveNum=$CFD2 Power=$CFD4 Type=$CFD5")
