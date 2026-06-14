@@ -6933,10 +6933,21 @@ PlayMoveAnimation:
 	ld a, 14
 .imFire:
 	ld [$C6F9], a
+	push af
+	ld a, $01
+	ld [$C6F6], a    ; flag: iconic override fired, skip type texture
+	pop af
 	ld a, $08
 	ld [$C6F8], a
 	ld [$4000], a
 .imDone:
+	; Clear iconic flag if we skipped (no override)
+	ld a, [$C6F6]
+	and a
+	jp nz, .imRealDone
+	xor a
+	ld [$C6F6], a
+.imRealDone:
 	pop hl
 	pop bc
 	pop af
@@ -6944,6 +6955,10 @@ PlayMoveAnimation:
 	; === RUMBLE TYPE TEXTURE v1 - player move type overlay ===
 	push af
 	push bc
+	; Skip if iconic override already handled this move
+	ld a, [$C6F6]
+	and a
+	jp nz, .skipTypeRumble
 	ld a, [wPlayerMovePower]
 	and a
 	jp z, .skipTypeRumble   ; skip status moves
@@ -7043,6 +7058,8 @@ PlayMoveAnimation:
 	ld [$C6F7], a
 .typeTextureDone:
 .skipTypeRumble:
+	xor a
+	ld [$C6F6], a    ; clear iconic flag
 	pop bc
 	pop af
 	; === END RUMBLE TYPE TEXTURE v1 ===
