@@ -436,12 +436,7 @@ MoveAnimation:
 	vc_hook_blue Stop_reducing_move_anim_flashing_Rock_Slide_Dream_Eater
 	call PlayApplyingAttackAnimation ; shake the screen or flash the pic in and out (to show damage)
 .animationFinished
-	; === RUMBLE OFF ===
-	ld a, $00
-	ld [$4000], a
-	ld a, $00
-	ld [$C700], a
-	; === END RUMBLE OFF ===
+	; (old RUMBLE OFF removed - VBlank handles motor cutoff)
 	call WaitForSoundToFinish
 	xor a
 	ld [wSubAnimSubEntryAddr], a
