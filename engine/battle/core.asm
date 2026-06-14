@@ -6880,7 +6880,11 @@ PlayMoveAnimation:
 	jp nz, .im08
 	ld a, 42
 	jp .imFire
-.im08: cp $39 ; SURF
+.im08: cp $38 ; HYDRO PUMP
+	jp nz, .im08b
+	ld a, 50
+	jp .imFire
+.im08b: cp $39 ; SURF
 	jp nz, .im09
 	ld a, 38
 	jp .imFire
