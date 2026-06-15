@@ -60,11 +60,11 @@ UsedCut:
 	; === RUMBLE CUT v1 - tree disappears ===
 	push af
 	ld a, $0A
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 20
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE CUT v1 ===
@@ -76,11 +76,11 @@ UsedCut:
 	; === RUMBLE CUT SLASH v1 - slash sound ===
 	push af
 	ld a, $0B
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 8
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE CUT SLASH v1 ===

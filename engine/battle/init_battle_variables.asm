@@ -1,13 +1,13 @@
 InitBattleVariables:
 ; === RUMBLE INIT v1 - zero rumble state at battle start ===
 	xor a
-	ld [$C6F9], a
-	ld [$C6F8], a
-	ld [$C6F7], a
-	ld [$C6F6], a
-	ld [$C6FC], a
-	ld [$C6FB], a
-	ld [$C6FD], a
+	ld [$CD81], a
+	ld [$CD82], a
+	ld [$CD83], a
+	ld [$CD84], a
+	ld [$CD85], a
+	ld [$CD86], a
+	ld [$CD87], a
 ; === END RUMBLE INIT v1 ===
 	ldh a, [hTileAnimations]
 	ld [wSavedTileAnimations], a

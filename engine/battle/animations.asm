@@ -741,11 +741,11 @@ DoBallShakeSpecialEffects:
 	; === RUMBLE BALL v1 - one shake thump ===
 	push af
 	ld a, $05
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 8
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a    ; signal: ball shake
 	pop af
 	; === END RUMBLE BALL v1 ===

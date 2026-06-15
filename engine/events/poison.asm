@@ -92,11 +92,11 @@ ApplyOutOfBattlePoisonDamage:
 	; === RUMBLE OVERWORLD POISON v1 - step damage flash ===
 	push af
 	ld a, $07
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 12
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE OVERWORLD POISON v1 ===

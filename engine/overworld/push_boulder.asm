@@ -69,16 +69,16 @@ TryPushingBoulder::
 	; === RUMBLE BOULDER v2 - push: hard initial buzz ===
 	push af
 	ld a, 18          ; harder initial push buzz
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE BOULDER v2 ===
 	; === RUMBLE STRENGTH v1 - boulder push step ===
 	push af
 	ld a, $0B
-	ld [$C6FA], a
+	ld [$CD88], a
 	pop af
 	; === END RUMBLE STRENGTH v1 ===
 	ld hl, wMiscFlags
@@ -109,11 +109,11 @@ DoBoulderDustAnimation::
 	; === RUMBLE BOULDER SETTLE v2 - soft settle ===
 	push af
 	ld a, $0D
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 10          ; lighter settle buzz
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE BOULDER SETTLE v2 ===
@@ -128,11 +128,11 @@ DoBoulderDustAnimation::
 	; === RUMBLE BOULDER SETTLE v1 - boulder finishes moving ===
 	push af
 	ld a, $0C
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 8
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE BOULDER SETTLE v1 ===

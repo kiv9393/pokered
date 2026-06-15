@@ -498,11 +498,11 @@ HandlePoisonBurnLeechSeed:
 	and a
 	jr nz, .skipPoisonRumble  ; only rumble when player is hurt
 	ld a, $07
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 12
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a              ; signal: poison/burn tick
 .skipPoisonRumble:
 	pop af
@@ -2289,11 +2289,11 @@ UseBagItem:
 	; === RUMBLE CATCH v1 - successful catch ===
 	push af
 	ld a, $06
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 30
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE CATCH v1 ===
@@ -3485,11 +3485,11 @@ CheckPlayerStatusConditions:
 	; === RUMBLE PARALYSIS v1 - player fully paralyzed stutter ===
 	push af
 	ld a, $08
-	ld [$C6FA], a
+	ld [$CD88], a
 	ld a, 10
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	pop af
 	; === END RUMBLE PARALYSIS v1 ===
@@ -4730,9 +4730,9 @@ ApplyDamageToEnemyPokemon:
 .skipImpactEn:
 	jr .impactEnDone
 .impactEnFire:
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 .impactEnDone:
 	pop bc
@@ -4885,9 +4885,9 @@ ApplyDamageToPlayerPokemon:
 .skipImpactPl:
 	jr .impactPlDone
 .impactPlFire:
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 .impactPlDone:
 	pop bc
@@ -5687,9 +5687,9 @@ PlayEnemyMoveAnimation:
 .enMot2H:
 	ld a, 25
 .enMot2Fire:
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	ld a, [wEnemyMovePower]
 	cp 41
@@ -5709,7 +5709,7 @@ PlayEnemyMoveAnimation:
 .enSig2H:
 	ld a, 3
 .enSig2D:
-	ld [$C6FB], a
+	ld [$CD86], a
 .skipEnMot2:
 	pop bc
 	pop af
@@ -6797,7 +6797,7 @@ PlayMoveAnimation:
 	cp 2
 	jr c, .skipMot7
 	ld a, [wCriticalHitOrOHKO]
-	ld [$C6FD], a
+	ld [$CD87], a
 	ld a, [wPlayerMovePower]
 	cp 41
 	jr c, .mot7Weak
@@ -6816,9 +6816,9 @@ PlayMoveAnimation:
 .mot7Heavy:
 	ld a, 35
 .mot7Fire:
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 	ld a, [wPlayerMovePower]
 	cp 41
@@ -6838,7 +6838,7 @@ PlayMoveAnimation:
 .mot7SigH:
 	ld a, 3
 .mot7SigD:
-	ld [$C6FC], a
+	ld [$CD85], a
 	jr .skipMot7
 .skipMot7:
 	pop bc
@@ -6940,21 +6940,21 @@ PlayMoveAnimation:
 	jp nz, .imDone
 	ld a, 14
 .imFire:
-	ld [$C6F9], a
+	ld [$CD81], a
 	push af
 	ld a, $01
-	ld [$C6F6], a    ; flag: iconic override fired, skip type texture
+	ld [$CD84], a    ; flag: iconic override fired, skip type texture
 	pop af
 	ld a, $08
-	ld [$C6F8], a
+	ld [$CD82], a
 	ld [$4000], a
 .imDone:
 	; Clear iconic flag if we skipped (no override)
-	ld a, [$C6F6]
+	ld a, [$CD84]
 	and a
 	jp nz, .imRealDone
 	xor a
-	ld [$C6F6], a
+	ld [$CD84], a
 .imRealDone:
 	pop hl
 	pop bc
@@ -6964,7 +6964,7 @@ PlayMoveAnimation:
 	push af
 	push bc
 	; Skip if iconic override already handled this move
-	ld a, [$C6F6]
+	ld a, [$CD84]
 	and a
 	jp nz, .skipTypeRumble
 	ld a, [wPlayerMovePower]
@@ -6976,50 +6976,50 @@ PlayMoveAnimation:
 	; ELECTRIC ($17) - sharp violent jolt: override with shorter sharper buzz
 	cp $17
 	jp nz, .notElectric
-	ld a, [$C6F9]           ; get current countdown
+	ld a, [$CD81]           ; get current countdown
 	; Electric: cut duration by 40%, add extra pulse signal
 	ld a, $01
-	ld [$C6F7], a           ; texture signal: electric
+	ld [$CD83], a           ; texture signal: electric
 	jp .typeTextureDone
 .notElectric:
 	; GROUND ($04) - heavy shake: extend duration by 50%
 	cp $04
 	jp nz, .notGround
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	srl a                   ; a = duration/2
 	ld b, a
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	add b                   ; duration * 1.5
-	ld [$C6F9], a           ; extend countdown
+	ld [$CD81], a           ; extend countdown
 	ld a, $02
-	ld [$C6F7], a           ; texture: ground
+	ld [$CD83], a           ; texture: ground
 	jp .typeTextureDone
 .notGround:
 	; PSYCHIC ($18) - slow wave: slightly extend
 	cp $18
 	jp nz, .notPsychic
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	srl a
 	ld b, a
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	add b
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $03
-	ld [$C6F7], a           ; texture: psychic
+	ld [$CD83], a           ; texture: psychic
 	jp .typeTextureDone
 .notPsychic:
 	; FIRE ($14) - staccato: shorten slightly for rapid feel
 	cp $14
 	jp nz, .notFire
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	srl a
 	srl a
 	ld b, a
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	sub b                   ; duration * 0.75
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $04
-	ld [$C6F7], a           ; texture: fire
+	ld [$CD83], a           ; texture: fire
 	jp .typeTextureDone
 .notFire:
 	; WATER ($15) / ICE ($19) - smooth: extend slightly
@@ -7028,46 +7028,46 @@ PlayMoveAnimation:
 	cp $19
 	jp nz, .notWaterIce
 .waterIce:
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	srl a
 	ld b, a
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	add b                   ; duration * 1.25 ish
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $05
-	ld [$C6F7], a           ; texture: water/ice
+	ld [$CD83], a           ; texture: water/ice
 	jp .typeTextureDone
 .notWaterIce:
 	; GHOST ($08) - eerie: shorter but will pulse
 	cp $08
 	jp nz, .notGhost
 	ld a, $06
-	ld [$C6F7], a           ; texture: ghost
+	ld [$CD83], a           ; texture: ghost
 	jp .typeTextureDone
 .notGhost:
 	; DRAGON ($1A) - maximum: extend significantly
 	cp $1A
 	jp nz, .notDragon
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	srl a
 	ld b, a
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	add b
 	ld b, a
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	add b                   ; duration * 2
-	ld [$C6F9], a
+	ld [$CD81], a
 	ld a, $07
-	ld [$C6F7], a           ; texture: dragon
+	ld [$CD83], a           ; texture: dragon
 	jp .typeTextureDone
 .notDragon:
 	; Default: no texture modification
 	ld a, $00
-	ld [$C6F7], a
+	ld [$CD83], a
 .typeTextureDone:
 .skipTypeRumble:
 	xor a
-	ld [$C6F6], a    ; clear iconic flag
+	ld [$CD84], a    ; clear iconic flag
 	pop bc
 	pop af
 	; === END RUMBLE TYPE TEXTURE v1 ===

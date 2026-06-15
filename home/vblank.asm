@@ -38,17 +38,17 @@ VBlank::
 
 	; === RUMBLE VBLANK v5 - safe init + countdown ===
 	; Guard: only act if C6F8 has been set (motor was intentionally fired)
-	ld a, [$C6F8]
+	ld a, [$CD82]
 	and a
 	jr z, .rumbleDone  ; C6F8=0 means motor never initialized, skip
-	ld a, [$C6F9]
+	ld a, [$CD81]
 	and a
 	jr z, .rumbleDone
 	dec a
-	ld [$C6F9], a
+	ld [$CD81], a
 	jr nz, .rumbleDone
 	; Counter hit zero - turn motor off
-	ld a, [$C6F8]
+	ld a, [$CD82]
 	and $F7
 	ld [$4000], a
 .rumbleDone

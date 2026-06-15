@@ -64,12 +64,12 @@ callbacks:add("frame", function()
         console:log("[" .. frameCount .. "] alive | events: " .. sessionEvents)
     end
 
-    local playerTier = emu:read8(0xC6FC)
-    local enemyTier  = emu:read8(0xC6FB)
-    local isCrit     = emu:read8(0xC6FD)
-    local sig        = emu:read8(0xC6FA)
-    local countdown  = emu:read8(0xC6F9)
-    local texture    = emu:read8(0xC6F7)
+    local playerTier = emu:read8(0xCD85)
+    local enemyTier  = emu:read8(0xCD86)
+    local isCrit     = emu:read8(0xCD87)
+    local sig        = emu:read8(0xCD88)
+    local countdown  = emu:read8(0xCD81)
+    local texture    = emu:read8(0xCD83)
 
     -- FIXED RAM addresses
     local moveNum   = emu:read8(0xCFD2)
@@ -77,8 +77,8 @@ callbacks:add("frame", function()
     local moveType  = emu:read8(0xCFD5)
 
     if playerTier >= 1 and playerTier <= 4 and playerTier ~= lastPlayerTier then
-        emu:write8(0xC6FC, 0)
-        emu:write8(0xC6FD, 0)
+        emu:write8(0xCD85, 0)
+        emu:write8(0xCD87, 0)
         sessionEvents = sessionEvents + 1
         local moveName = MOVE_NAMES[moveNum] or ("Move" .. string.format("%02X", moveNum))
         local typeName = TYPE_NAMES[moveType] or ("Type" .. string.format("%02X", moveType))
@@ -97,7 +97,7 @@ callbacks:add("frame", function()
     lastPlayerTier = playerTier
 
     if enemyTier >= 1 and enemyTier <= 4 and enemyTier ~= lastEnemyTier then
-        emu:write8(0xC6FB, 0)
+        emu:write8(0xCD86, 0)
         sessionEvents = sessionEvents + 1
         local ms = math.floor(countdown * 16.67)
         console:log("-----------------------------------")
@@ -125,7 +125,7 @@ callbacks:add("frame", function()
     lastCountdown = countdown
 
     if sig >= 5 and SIGNALS[sig] then
-        emu:write8(0xC6FA, 0)
+        emu:write8(0xCD88, 0)
         sessionEvents = sessionEvents + 1
         console:log("[" .. frameCount .. "] " .. SIGNALS[sig] .. " #" .. sessionEvents)
     end
