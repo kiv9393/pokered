@@ -43,6 +43,7 @@ local TIER_NAMES = {
 }
 
 local SIGNALS = {
+    [0xEE]='IMPACT-enemy', [0xEF]='IMPACT-player',
     [5]="BALL-SHAKE", [6]="CAUGHT",      [7]="POISON-BURN",
     [8]="PARALYZED",  [9]="FAINT",       [10]="CUT-tree",
     [11]="CUT-slash", [12]="BOULDER-push",[13]="BOULDER-settle",
@@ -84,7 +85,7 @@ local function snapRAM()
         moveNum   = emu:read8(0xCFD2),
         movePwr   = emu:read8(0xCFD4),
         moveType  = emu:read8(0xCFD5),
-        whoseTurn = emu:read8(0xFF83),
+        whoseTurn = emu:read8(0xFFF3),
     }
 end
 

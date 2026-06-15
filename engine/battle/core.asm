@@ -4731,6 +4731,10 @@ ApplyDamageToEnemyPokemon:
 	jr .impactEnDone
 .impactEnFire:
 	ld [$CD81], a
+	push af
+	ld a, $EE
+	ld [$CD88], a    ; tag: impact-enemy
+	pop af
 	ld a, $08
 	ld [$CD82], a
 	ld [$4000], a
@@ -4886,6 +4890,10 @@ ApplyDamageToPlayerPokemon:
 	jr .impactPlDone
 .impactPlFire:
 	ld [$CD81], a
+	push af
+	ld a, $EF
+	ld [$CD88], a    ; tag: impact-player
+	pop af
 	ld a, $08
 	ld [$CD82], a
 	ld [$4000], a

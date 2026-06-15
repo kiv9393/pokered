@@ -8,6 +8,7 @@ InitBattleVariables:
 	ld [$CD85], a
 	ld [$CD86], a
 	ld [$CD87], a
+	ld [$CD88], a
 ; === END RUMBLE INIT v1 ===
 	ldh a, [hTileAnimations]
 	ld [wSavedTileAnimations], a
